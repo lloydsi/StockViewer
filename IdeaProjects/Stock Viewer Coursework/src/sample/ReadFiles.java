@@ -1,5 +1,8 @@
 package sample;
 
+import javafx.fxml.FXML;
+import javafx.scene.control.TableView;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;

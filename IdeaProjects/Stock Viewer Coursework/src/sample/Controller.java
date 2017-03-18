@@ -109,6 +109,7 @@ public class Controller {
     }
 
     public void companyDetails(ActionEvent event) {
+        /* Reads the csv file containing all the company details and uses the details to fill the TableView */
         ObservableList<Company> companyDetails;
         ObservableList<String> companyNames;
         BufferedReader br = null;
@@ -126,26 +127,25 @@ public class Controller {
                 coName = co[1];
                 coFilename = co[2];
                 Company company = new Company( coStockSymbol, coName, coFilename);
-
+                // creates arraylists
                 companyNames.add(coName);
                 companyDetails.add(company);
-
                 }
-            //System.out.println(companyNames);
-            //System.out.println(companyDetails);
+            // fills name and symbol columns
             colCompanyName.setCellValueFactory(
                     new PropertyValueFactory<Company, String>("name")
             );
             colStockSymbol.setCellValueFactory(
                     new PropertyValueFactory<Company, String>("stockSymbol")
             );
-            //colLatestSharePrice.setCellValueFactory(
-                    //new PropertyValueFactory<Company, String>("filename")
-            //);
+;
             tblLatestSharePrice.setItems(companyDetails);
             listViewCompany.setItems(companyNames);
-        }catch(IOException ex)
-        {ex.printStackTrace();}
+        }
+        catch(IOException ex)
+        {
+            ex.printStackTrace();
+        }
         finally{
             try {
                 br.close();
@@ -155,18 +155,21 @@ public class Controller {
         }}
 
     public String getSelection(){
+        /* uses the selection from the Table View on Overview page and takes the filename */
         Company company = tblLatestSharePrice.getSelectionModel().getSelectedItem();
         String selectedFilename = company.getFilename();
         System.out.println(selectedFilename);
         return selectedFilename;
    }
 
-    public void companyStockDetails(MouseEvent mouseClick) {
-        ObservableList<Stock> stockDetails;
+    public ObservableList collectStockDetailsData() {
+        /* creates a new stock from a csv file */
+        ObservableList<Stock> stockDetails=null;
         BufferedReader br = null;
         try {
-
-            br = new BufferedReader(new FileReader("AHT.CSV"));
+            String selectedFilename;
+            selectedFilename = this.getSelection();
+            br = new BufferedReader(new FileReader(selectedFilename));
             //System.out.println(selectedFilename);
             br.readLine();
             String line;
@@ -180,43 +183,58 @@ public class Controller {
                 double volume = Double.parseDouble(sto[4]);
                 double close = Double.parseDouble(sto[5]);
                 double adjClose = Double.parseDouble(sto[6]);
-                Stock stock = new Stock(linkedDate,open,high,low,close,volume,adjClose);
+                Stock stock = new Stock(linkedDate, open, high, low, close, volume, adjClose);
                 stockDetails.add(stock);
                 System.out.println(stockDetails);
-                colDate.setCellValueFactory(
-                        new PropertyValueFactory<Stock, String>("linkedDate")
-                );
-                colOpen.setCellValueFactory(
-                        new PropertyValueFactory<Stock, Double>("open")
-                );
-                colHigh.setCellValueFactory(
-                        new PropertyValueFactory<Stock, Double>("high")
-                );
-                colLow.setCellValueFactory(
-                        new PropertyValueFactory<Stock, Double>("low")
-                );
-                colClose.setCellValueFactory(
-                        new PropertyValueFactory<Stock, Double>("volume")
-                );
-                colVolume.setCellValueFactory(
-                        new PropertyValueFactory<Stock, Double>("close")
-                );
-                colAdjClose.setCellValueFactory(
-                        new PropertyValueFactory<Stock, Double>("adjClose")
-                );
-                tblStockDetails.setItems(stockDetails);
-            }
-
-          }catch(IOException ex)
-        {ex.printStackTrace();}
-        finally{
+            }}
+        catch(IOException ex)
+            {ex.printStackTrace();}
+        finally {
             try {
                 br.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        }}
+        return stockDetails;
+    }
+
+
+    public void companyStockDetails(MouseEvent mouseclick){
+        /* uses stock data to fill the stock details table */
+        ObservableList<Stock> stockDetails;
+        stockDetails = this.collectStockDetailsData();
+        if (stockDetails != null) {
+            colDate.setCellValueFactory(
+                    new PropertyValueFactory<Stock, String>("linkedDate")
+            );
+            colOpen.setCellValueFactory(
+                    new PropertyValueFactory<Stock, Double>("open")
+            );
+            colHigh.setCellValueFactory(
+                    new PropertyValueFactory<Stock, Double>("high")
+            );
+            colLow.setCellValueFactory(
+                    new PropertyValueFactory<Stock, Double>("low")
+            );
+            colClose.setCellValueFactory(
+                    new PropertyValueFactory<Stock, Double>("volume")
+            );
+            colVolume.setCellValueFactory(
+                    new PropertyValueFactory<Stock, Double>("close")
+            );
+            colAdjClose.setCellValueFactory(
+                    new PropertyValueFactory<Stock, Double>("adjClose")
+            );
+            tblStockDetails.setItems(stockDetails);
+        }
+        else {
+            System.out.println("There is no data to display");
+        }
+
+            }}
+
+
 
 
 
