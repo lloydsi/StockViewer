@@ -109,7 +109,7 @@
                                              <font>
                                                 <Font name="System Bold" size="18.0" />
                                              </font></Label>
-                                          <ListView fx:id="listViewCompany" prefHeight="159.0" prefWidth="171.0">
+                                          <ListView fx:id="listViewCompany" onMouseClicked="#getSelectionListView" prefHeight="159.0" prefWidth="171.0">
                                              <VBox.margin>
                                                 <Insets />
                                              </VBox.margin></ListView>

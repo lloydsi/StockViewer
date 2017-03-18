@@ -85,6 +85,8 @@ public class Controller {
     private String[] stock;
     private ObservableList<Company> selectedCompanyDetails;
     private ObservableList<Stock> selectedStockDetails;
+    public ObservableList<Company> companyDetails;
+    public ObservableList<String> companyNames;
 
 
 
@@ -110,8 +112,7 @@ public class Controller {
 
     public void companyDetails(ActionEvent event) {
         /* Reads the csv file containing all the company details and uses the details to fill the TableView */
-        ObservableList<Company> companyDetails;
-        ObservableList<String> companyNames;
+
         BufferedReader br = null;
         String coName;
         String coStockSymbol;
@@ -138,7 +139,6 @@ public class Controller {
             colStockSymbol.setCellValueFactory(
                     new PropertyValueFactory<Company, String>("stockSymbol")
             );
-;
             tblLatestSharePrice.setItems(companyDetails);
             listViewCompany.setItems(companyNames);
         }
@@ -161,6 +161,15 @@ public class Controller {
         System.out.println(selectedFilename);
         return selectedFilename;
    }
+
+   public String getSelectionListView(MouseEvent mouseclick) {
+        /* gets the selection of Company name from the List View */
+       Object Selected = listViewCompany.getSelectionModel().getSelectedItem();
+       String selectedName = Selected.toString();
+       System.out.println(selectedName);
+       return selectedName;
+   }
+
 
     public ObservableList collectStockDetailsData() {
         /* creates a new stock from a csv file */
