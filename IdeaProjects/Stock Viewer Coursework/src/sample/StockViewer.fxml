@@ -71,7 +71,7 @@
                   <content>
                     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <TableView fx:id="tblLatestSharePrice" layoutX="67.0" layoutY="120.0" onMouseClicked="#companyStockDetails" prefHeight="413.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <TableView fx:id="tblLatestSharePrice" layoutX="67.0" layoutY="120.0" onMouseClicked="#getSelection" prefHeight="413.0" prefWidth="900.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <columns>
                                     <TableColumn fx:id="colCompanyName" prefWidth="150.0" text="Company Name" />
                                   <TableColumn fx:id="colStockSymbol" prefWidth="150.0" text="Stock Symbol" />

@@ -82,11 +82,13 @@ public class Controller {
 
     private String filename;
     private String selectedFilename;
+    private String selectedCoFilename;
     private String[] stock;
     private ObservableList<Company> selectedCompanyDetails;
     private ObservableList<Stock> selectedStockDetails;
-    public ObservableList<Company> companyDetails;
-    public ObservableList<String> companyNames;
+    private ObservableList<Company> companyDetails;
+    private ObservableList<String> companyNames;
+    private ObservableList<Stock> stockDetails;
 
 
 
@@ -154,30 +156,35 @@ public class Controller {
             }
         }}
 
-    public String getSelection(){
+    public String getSelection(MouseEvent mouseclick){
         /* uses the selection from the Table View on Overview page and takes the filename */
         Company company = tblLatestSharePrice.getSelectionModel().getSelectedItem();
         String selectedFilename = company.getFilename();
         System.out.println(selectedFilename);
+        this.collectStockDetailsData(selectedFilename);
         return selectedFilename;
    }
 
    public String getSelectionListView(MouseEvent mouseclick) {
-        /* gets the selection of Company name from the List View */
+        /* gets the selection of Company name from the List View and then finds its file */
        Object Selected = listViewCompany.getSelectionModel().getSelectedItem();
-       String selectedName = Selected.toString();
-       System.out.println(selectedName);
-       return selectedName;
+       String selectedCoFileName = Selected.toString();
+       int pos = companyNames.indexOf(selectedCoFileName);
+       Company selectedCompany = companyDetails.get(pos);
+       System.out.println(selectedCompany.getFilename());
+       selectedCoFilename = selectedCompany.getFilename();
+       this.collectStockDetailsData(selectedCoFilename);
+       return selectedCoFileName;
    }
+    public void UseListViewToFillStockDetailsTable(){}
 
-
-    public ObservableList collectStockDetailsData() {
+    public ObservableList collectStockDetailsData(String selectedFilename) {
         /* creates a new stock from a csv file */
-        ObservableList<Stock> stockDetails=null;
+        //ObservableList<Stock> stockDetails=null;
         BufferedReader br = null;
         try {
-            String selectedFilename;
-            selectedFilename = this.getSelection();
+            //String selectedFilename;
+            //selectedFilename = this.getSelection();
             br = new BufferedReader(new FileReader(selectedFilename));
             //System.out.println(selectedFilename);
             br.readLine();
@@ -195,6 +202,7 @@ public class Controller {
                 Stock stock = new Stock(linkedDate, open, high, low, close, volume, adjClose);
                 stockDetails.add(stock);
                 System.out.println(stockDetails);
+                this.companyStockDetails(stockDetails);
             }}
         catch(IOException ex)
             {ex.printStackTrace();}
@@ -205,14 +213,15 @@ public class Controller {
                 e.printStackTrace();
             }
         }
+
         return stockDetails;
     }
 
 
-    public void companyStockDetails(MouseEvent mouseclick){
+    public void companyStockDetails(ObservableList<Stock> stockDetails){
         /* uses stock data to fill the stock details table */
-        ObservableList<Stock> stockDetails;
-        stockDetails = this.collectStockDetailsData();
+        //ObservableList<Stock> stockDetails;
+        //stockDetails = this.collectStockDetailsData();
         if (stockDetails != null) {
             colDate.setCellValueFactory(
                     new PropertyValueFactory<Stock, String>("linkedDate")
