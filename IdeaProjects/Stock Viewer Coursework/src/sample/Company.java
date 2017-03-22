@@ -8,15 +8,20 @@ import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Created by sian- on 11/03/2017.
  */
 public class Company {
-        private String name;
+       private String name;
         private String stockSymbol;
         private String filename;
-        private String line;
+        private Double latestClosePrice;
+        private Date latestStockDate;
+        private Date highestStockDate;
+        private Date lowestStockDate;
+        private Double AverageStock;
 
         public Company()
         {
@@ -36,10 +41,59 @@ public class Company {
              this.name = name;
              this.filename = filename;
         }
+         public Company (String filename)
+         {
+              this.filename = filename;
+         }
 
-        public Company (String filename){
-            this.filename=filename;
+
+        /*Getters and Setters*/
+        public void setLatestClosePrice(Double latestClosePrice){
+            this.latestClosePrice = latestClosePrice;
         }
+
+        public Double getLatestClosePrice(){
+            return latestClosePrice;
+        }
+
+        public void setHighestStock(Date highestStockDate){
+            this.highestStockDate = highestStockDate;
+        }
+
+        public Date getHighestStockDate(){
+            return highestStockDate;
+        }
+
+        public Date getLowestStockDate(){
+            return lowestStockDate;
+        }
+
+        public void setLowestStock(Date lowestStockDate){
+            this.lowestStockDate = lowestStockDate;
+        }
+
+        public void  setLatestSharePrice(Double latestSharePrice){
+            this.latestClosePrice = latestSharePrice;
+    }
+        public Double getLatestSharePrice(){
+            return latestClosePrice;
+        }
+        public void setLatestStockDate(Date latestStockDate){
+            this.latestStockDate = latestStockDate;
+        }
+        public Date getLatestStockDate(){
+            return latestStockDate;
+        }
+
+        public void setAverageStock(Double AverageStock){
+            this.AverageStock = AverageStock;
+        }
+
+        public Double getAverageStock(){
+            return AverageStock;
+        }
+
+
 
         public void setFilename(String filename) {
             this.filename = filename;

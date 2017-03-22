@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.ArrayList;
 /**
@@ -24,7 +25,7 @@ public class ReadFiles {
             while (readIn.hasNextLine()) {
                 String line = readIn.nextLine();
                 String[] data = line.split(",");
-                String  date = data[0];
+                Date date = StringToDate.changeStringToDate(data[0]);
                 double open = Double.parseDouble(data[1]);
                 double high = Double.parseDouble(data[2]);
                 double low = Double.parseDouble(data[3]);

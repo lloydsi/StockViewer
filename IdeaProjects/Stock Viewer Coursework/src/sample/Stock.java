@@ -1,12 +1,13 @@
 package sample;
 import java.io.File;
+import java.util.Date;
 
 /**
  * Created by sian- on 11/03/2017.
  */
 public class Stock extends Company {
 
-        private String date;
+        private Date date;
         private double open;
         private double high;
         private double low;
@@ -16,7 +17,7 @@ public class Stock extends Company {
 
 
         public Stock() {
-            this.date = "";
+            this.date =  getDate(date);
             this.open = 0.0;
             this.high = 0.0;
             this.low = 0.0;
@@ -24,7 +25,7 @@ public class Stock extends Company {
             this.volume = 0.0;
             this.adjClose = 0.0;
         }
-        public Stock(String date, double open, double high, double low, double close, double volume, double adjClose){
+        public Stock(Date date, double open, double high, double low, double close, double volume, double adjClose){
             this.date = date;
             this.open = open;
             this.high = high;
@@ -34,11 +35,11 @@ public class Stock extends Company {
             this.adjClose = adjClose;
         }
 
-    public void setDate(String date)
+    public void setDate(Date date)
         {
             this.date = date;
         }
-        public String getDate(String date)
+        public Date getDate(Date date)
         {
             return this.date;
         }

@@ -5,6 +5,7 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -96,8 +97,9 @@
                                 </columnConstraints>
                                 <rowConstraints>
                                   <RowConstraints maxHeight="365.0" minHeight="10.0" prefHeight="361.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="143.0" minHeight="0.0" prefHeight="68.0" vgrow="SOMETIMES" />
-                                  <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="18.0" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="143.0" minHeight="0.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="143.0" minHeight="0.0" prefHeight="22.0" vgrow="SOMETIMES" />
+                                    <RowConstraints maxHeight="84.0" minHeight="10.0" prefHeight="18.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
                                     <VBox prefHeight="352.0" prefWidth="191.0">
@@ -109,25 +111,28 @@
                                              <font>
                                                 <Font name="System Bold" size="18.0" />
                                              </font></Label>
-                                          <ListView fx:id="listViewCompany" onMouseClicked="#getSelectionListView" prefHeight="159.0" prefWidth="171.0">
+                                          <ListView fx:id="listViewCompany" onMouseClicked="#getSelectionListView" prefHeight="191.0" prefWidth="171.0">
                                              <VBox.margin>
                                                 <Insets />
                                              </VBox.margin></ListView>
                                           <Label text="Highest:">
-                                             <VBox.margin>
-                                                <Insets top="20.0" />
-                                             </VBox.margin></Label>
-                                          <Label fx:id="lblHighest" text="lblHighest" />
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="lblHighest" />
                                           <Label text="Lowest:">
-                                             <VBox.margin>
-                                                <Insets top="20.0" />
-                                             </VBox.margin></Label>
-                                          <Label fx:id="lblLowest" text="lblLowest" />
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="lblLowest" />
                                           <Label text="Average:">
-                                             <VBox.margin>
-                                                <Insets top="20.0" />
-                                             </VBox.margin></Label>
-                                          <Label fx:id="lblAverage" text="lblAverage" />
+                                             <font>
+                                                <Font name="System Bold" size="18.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="lblAverage" text="Label" />
                                        </children>
                                        <GridPane.margin>
                                           <Insets right="20.0" />
@@ -135,8 +140,8 @@
                                     </VBox>
                                     <TableView fx:id="tblStockDetails" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1">
                                       <columns>
-                                        <TableColumn fx:id="colDate" prefWidth="75.0" text="Date" />
-                                        <TableColumn fx:id="colOpen" prefWidth="75.0" text="Open" />
+                                          <TableColumn fx:id="colDate" prefWidth="75.0" text="Date" />
+                                          <TableColumn fx:id="colOpen" prefWidth="75.0" text="Open" />
                                           <TableColumn fx:id="colHigh" prefWidth="75.0" text="High" />
                                           <TableColumn fx:id="colLow" prefWidth="75.0" text="Low" />
                                           <TableColumn fx:id="colClose" prefWidth="75.0" text="Close" />
@@ -147,7 +152,7 @@
                                           <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                        </columnResizePolicy>
                                     </TableView>
-                                    <HBox fx:id="fromDatePicker" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                    <HBox fx:id="hBoxDates" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                        <children>
                                           <Label text="From:">
                                              <HBox.margin>
@@ -170,9 +175,13 @@
                                           </DatePicker>
                                        </children>
                                        <GridPane.margin>
-                                          <Insets top="10.0" />
+                                          <Insets top="30.0" />
                                        </GridPane.margin>
                                     </HBox>
+                                    <Button mnemonicParsing="false" text="Print Report" GridPane.rowIndex="1">
+                                       <GridPane.margin>
+                                          <Insets top="30.0" />
+                                       </GridPane.margin></Button>
                                  </children>
                               </GridPane>
                            </children></AnchorPane>

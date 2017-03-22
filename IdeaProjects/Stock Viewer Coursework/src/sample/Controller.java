@@ -1,89 +1,62 @@
 package sample;
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableArray;
 import javafx.event.ActionEvent;
-import javafx.event.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import javafx.util.Callback;
+import static java.util.Locale.UK;
+import static java.text.DateFormat.SHORT;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
-
-import static java.lang.Integer.parseInt;
-
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter.*;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
+import java.util.Date;
+import java.util.List;
 
 public class Controller {
+ /*  Loads all the SceneBuilder items */
+    @FXML private MenuItem menuOpenCSV;
+    @FXML private MenuItem menuFileClose;
+    @FXML private Menu menuHelp;
+    @FXML private TabPane tabPane;
+    @FXML private Tab tabOverview;
+    @FXML private Tab tabDetailedView;
+    @FXML private Tab tabGraphicalView;
+    @FXML private ListView listViewCompany;
+    @FXML private Label lblHighest;
+    @FXML private Label lblLowest;
+    @FXML private Label lblAverage;
+    @FXML private DatePicker toDatePicker;
+    @FXML private DatePicker fromDatePicker;
+    @FXML private TableView<Company> tblLatestSharePrice;
+    @FXML private TableColumn<Company, String> colCompanyName;
+    @FXML private TableColumn<Company, String> colStockSymbol;
+    @FXML private TableColumn<Company, String> colLatestSharePrice;
+    @FXML private TableView tblStockDetails;
+    @FXML private TableColumn<Stock, Date> colDate;
+    @FXML private TableColumn<Stock, Double > colOpen;
+    @FXML private TableColumn<Stock, Double > colHigh;
+    @FXML private TableColumn<Stock, Double > colLow;
+    @FXML private TableColumn<Stock, Double > colClose;
+    @FXML private TableColumn<Stock, Double > colVolume;
+    @FXML private TableColumn<Stock, Double > colAdjClose;
 
-    @FXML
-    private MenuItem menuOpenCSV;
-    @FXML
-    private MenuItem menuFileClose;
-    @FXML
-    private Menu menuHelp;
-    @FXML
-    private TabPane tabPane;
-    @FXML
-    private Tab tabOverview;
-    @FXML
-    private Tab tabDetailedView;
-    @FXML
-    private Tab tabGraphicalView;
-    @FXML
-    private ListView listViewCompany;
-    @FXML
-    private Label lblHighest;
-    @FXML
-    private Label lblLowest;
-    @FXML
-    private Label lblAverage;
-    /*@FXML
-    private DatePicker toDatePicker;
-    @FXML
-    private DatePicker fromDatePicker;*/
-    @FXML
-    private TableView<Company> tblLatestSharePrice;
-    @FXML
-    private TableColumn<Company, String> colCompanyName;
-    @FXML
-    private TableColumn<Company, String> colStockSymbol;
-    @FXML
-    private TableColumn<Company, String> colLatestSharePrice;
-
-    @FXML
-    private TableView tblStockDetails;
-    @FXML
-    private TableColumn<Stock, String> colDate;
-    @FXML
-    private TableColumn<Stock, Double > colOpen;
-    @FXML
-    private TableColumn<Stock, Double > colHigh;
-    @FXML
-    private TableColumn<Stock, Double > colLow;
-    @FXML
-    private TableColumn<Stock, Double > colClose;
-    @FXML
-    private TableColumn<Stock, Double > colVolume;
-    @FXML
-    private TableColumn<Stock, Double > colAdjClose;
-
-
+/* loads variables */
     private String filename;
     private String selectedFilename;
-    private String selectedCoFilename;
     private String[] stock;
+    private Double latestSharePrice;
     private ObservableList<Company> selectedCompanyDetails;
     private ObservableList<Stock> selectedStockDetails;
     private ObservableList<Company> companyDetails;
@@ -171,42 +144,98 @@ public class Controller {
        String selectedCoFileName = Selected.toString();
        int pos = companyNames.indexOf(selectedCoFileName);
        Company selectedCompany = companyDetails.get(pos);
-       System.out.println(selectedCompany.getFilename());
-       selectedCoFilename = selectedCompany.getFilename();
+       System.out.println("Filename is " + selectedCompany.getFilename());
+       String selectedCoFilename = selectedCompany.getFilename();
        this.collectStockDetailsData(selectedCoFilename);
        return selectedCoFileName;
    }
+
     public void UseListViewToFillStockDetailsTable(){}
 
-    public ObservableList collectStockDetailsData(String selectedFilename) {
+    private ObservableList collectStockDetailsData(String selectedFilename) {
         /* creates a new stock from a csv file */
-        //ObservableList<Stock> stockDetails=null;
         BufferedReader br = null;
         try {
-            //String selectedFilename;
-            //selectedFilename = this.getSelection();
             br = new BufferedReader(new FileReader(selectedFilename));
-            //System.out.println(selectedFilename);
             br.readLine();
             String line;
             stockDetails = FXCollections.observableArrayList();
+            Double highest = 0.0;
+            Double lowest = 1000000.0;
+            Double total = 0.0;
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            Date latestDate = df.parse("1900-01-01");
+            System.out.println("latest date is = " + latestDate);
+            int count = 0;
+
             while ((line = br.readLine()) != null) {
                 String[] sto = line.split(",");
-                String linkedDate = sto[0];
+                System.out.println(sto[0]);
+                Date date = df.parse(sto[0]);
+                System.out.println("df = " + date);
+                System.out.println("Back to string " + df.format(date));
                 double open = Double.parseDouble(sto[1]);
                 double high = Double.parseDouble(sto[2]);
                 double low = Double.parseDouble(sto[3]);
-                double volume = Double.parseDouble(sto[4]);
-                double close = Double.parseDouble(sto[5]);
+                double close = Double.parseDouble(sto[4]);
+                double volume = Double.parseDouble(sto[5]);
                 double adjClose = Double.parseDouble(sto[6]);
-                Stock stock = new Stock(linkedDate, open, high, low, close, volume, adjClose);
+
+               /* Finds the highest stock from the stock item */
+                if (high > highest) {
+                    Stock highestStock = new Stock(date, open, high, low, close, volume, adjClose);
+                    highest = high;
+                    String lbltext;
+                    lbltext = highest.toString() + " on " + df.format(highestStock.getDate(date));
+                    lblHighest.setText(lbltext);
+
+                }
+
+                /*finds the lowest stock from the stock item*/
+                if (low < lowest) {
+                    Stock lowestStock = new Stock(date, open, high, low, close, volume, adjClose);
+                    lowest = low;
+                    String lbltextlow;
+                    lbltextlow = lowest.toString() + " on " + df.format(lowestStock.getDate(date));
+                    lblLowest.setText(lbltextlow);
+                }
+
+                /*finds the latest date from the stock items*/
+                if (date.after(latestDate)){
+                    latestDate = date;
+                    Stock latestStock = new Stock(date,open,high,low,close,volume,adjClose);
+                    Double latestSharePrice = latestStock.getClose();
+                    String latestDay = df.format(latestDate);
+                    System.out.println("Latest date is: " + latestDay + " and latest Share price is  " + latestSharePrice);
+                }
+
+                /*Creates the stock object*/
+                Stock stock = new Stock(date, open, high, low, close, volume, adjClose);
+                System.out.println("Stock is " + stock);
+
+                /*Appends it to the observable list*/
                 stockDetails.add(stock);
-                System.out.println(stockDetails);
+                total = total + close;
+                count = count + 1;
+
+            }
+
+                /*finds the average stock from closing amount using total counted above*/
+                Double average = total/count;
+                long newAverage;
+                newAverage = Math.round(average);
+                String lbltextAve;
+                lbltextAve = String.valueOf(newAverage);
+                System.out.println("Average is:  "+average);
+                lblAverage.setText(lbltextAve);
+
+                /*Adds all the above stock details to the tableview by calling the following function*/
                 this.companyStockDetails(stockDetails);
-            }}
+            }
         catch(IOException ex)
-            {ex.printStackTrace();}
-        finally {
+            {ex.printStackTrace();} catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
             try {
                 br.close();
             } catch (IOException e) {
@@ -218,13 +247,14 @@ public class Controller {
     }
 
 
-    public void companyStockDetails(ObservableList<Stock> stockDetails){
+    private void companyStockDetails(ObservableList<Stock> stockDetails){
         /* uses stock data to fill the stock details table */
         //ObservableList<Stock> stockDetails;
         //stockDetails = this.collectStockDetailsData();
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
         if (stockDetails != null) {
-            colDate.setCellValueFactory(
-                    new PropertyValueFactory<Stock, String>("linkedDate")
+           colDate.setCellValueFactory(
+                   new PropertyValueFactory<Stock, Date>("date")
             );
             colOpen.setCellValueFactory(
                     new PropertyValueFactory<Stock, Double>("open")
@@ -236,10 +266,10 @@ public class Controller {
                     new PropertyValueFactory<Stock, Double>("low")
             );
             colClose.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("volume")
+                    new PropertyValueFactory<Stock, Double>("close")
             );
             colVolume.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("close")
+                    new PropertyValueFactory<Stock, Double>("volume")
             );
             colAdjClose.setCellValueFactory(
                     new PropertyValueFactory<Stock, Double>("adjClose")
