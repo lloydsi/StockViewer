@@ -117,22 +117,28 @@
                                              </VBox.margin></ListView>
                                           <Label text="Highest:">
                                              <font>
-                                                <Font name="System Bold" size="18.0" />
+                                                <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Label>
                                           <Label fx:id="lblHighest" />
                                           <Label text="Lowest:">
                                              <font>
-                                                <Font name="System Bold" size="18.0" />
+                                                <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Label>
                                           <Label fx:id="lblLowest" />
                                           <Label text="Average:">
                                              <font>
-                                                <Font name="System Bold" size="18.0" />
+                                                <Font name="System Bold" size="12.0" />
                                              </font>
                                           </Label>
                                           <Label fx:id="lblAverage" text="Label" />
+                                          <Label text="Latest Price:">
+                                             <font>
+                                                <Font name="System Bold" size="12.0" />
+                                             </font>
+                                          </Label>
+                                          <Label fx:id="lblLatestSharePrice" text="lblLatest" />
                                        </children>
                                        <GridPane.margin>
                                           <Insets right="20.0" />

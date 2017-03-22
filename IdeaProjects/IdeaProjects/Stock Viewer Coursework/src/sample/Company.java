@@ -22,6 +22,8 @@ public class Company {
         private Date highestStockDate;
         private Date lowestStockDate;
         private Double AverageStock;
+        private Double lowestStockValue;
+        private Double highestStockValue;
 
         public Company()
         {
@@ -56,7 +58,7 @@ public class Company {
             return latestClosePrice;
         }
 
-        public void setHighestStock(Date highestStockDate){
+        public void setHighestStockDate (Date highestStockDate){
             this.highestStockDate = highestStockDate;
         }
 
@@ -68,13 +70,24 @@ public class Company {
             return lowestStockDate;
         }
 
-        public void setLowestStock(Date lowestStockDate){
+        public void setLowestStockDate (Date lowestStockDate){
             this.lowestStockDate = lowestStockDate;
         }
-
+        public void setLowestStockValue(Double lowestStockValue){
+            this.lowestStockValue = lowestStockValue;
+        }
+        public Double getLowestStockValue(){
+            return lowestStockValue;
+        }
+        public void setHighestStockValue(Double highestStockValue){
+            this.highestStockValue = highestStockValue;
+        }
+        public Double getHighestStockValue(){
+            return highestStockValue;
+        }
         public void  setLatestSharePrice(Double latestSharePrice){
             this.latestClosePrice = latestSharePrice;
-    }
+        }
         public Double getLatestSharePrice(){
             return latestClosePrice;
         }
@@ -88,7 +101,6 @@ public class Company {
         public void setAverageStock(Double AverageStock){
             this.AverageStock = AverageStock;
         }
-
         public Double getAverageStock(){
             return AverageStock;
         }

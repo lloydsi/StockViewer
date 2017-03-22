@@ -7,9 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
-import static java.util.Locale.UK;
-import static java.text.DateFormat.SHORT;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -17,10 +14,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
 import java.util.Date;
 import java.util.List;
 
@@ -37,6 +30,7 @@ public class Controller {
     @FXML private Label lblHighest;
     @FXML private Label lblLowest;
     @FXML private Label lblAverage;
+    @FXML private Label lblLatestSharePrice;
     @FXML private DatePicker toDatePicker;
     @FXML private DatePicker fromDatePicker;
     @FXML private TableView<Company> tblLatestSharePrice;
@@ -57,11 +51,13 @@ public class Controller {
     private String selectedFilename;
     private String[] stock;
     private Double latestSharePrice;
+    private Double lowest = 1000000.0;
     private ObservableList<Company> selectedCompanyDetails;
     private ObservableList<Stock> selectedStockDetails;
     private ObservableList<Company> companyDetails;
     private ObservableList<String> companyNames;
     private ObservableList<Stock> stockDetails;
+
 
 
 
@@ -106,6 +102,17 @@ public class Controller {
                 // creates arraylists
                 companyNames.add(coName);
                 companyDetails.add(company);
+                for(int i=0; i<companyDetails.size();i++){
+                    String filename = company.getFilename();
+                    collectStockDetailsData(filename);
+                    //company.setAverageStock();
+                    //company.setLatestClosePrice();
+                    company.setLowestStockValue(lowest);
+                    System.out.println("Lowest is: " + company.getLowestStockValue());
+                   company.setLatestSharePrice(latestSharePrice);
+                   System.out.println("latest share price is "+ company.getLatestSharePrice());
+                   // company.setHighestStockValue();
+                }
                 }
             // fills name and symbol columns
             colCompanyName.setCellValueFactory(
@@ -161,7 +168,7 @@ public class Controller {
             String line;
             stockDetails = FXCollections.observableArrayList();
             Double highest = 0.0;
-            Double lowest = 1000000.0;
+
             Double total = 0.0;
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             Date latestDate = df.parse("1900-01-01");
@@ -185,9 +192,9 @@ public class Controller {
                 if (high > highest) {
                     Stock highestStock = new Stock(date, open, high, low, close, volume, adjClose);
                     highest = high;
-                    String lbltext;
-                    lbltext = highest.toString() + " on " + df.format(highestStock.getDate(date));
-                    lblHighest.setText(lbltext);
+                    String lblText;
+                    lblText = highest.toString() + " on " + df.format(highestStock.getDate(date));
+                    lblHighest.setText(lblText);
 
                 }
 
@@ -195,9 +202,10 @@ public class Controller {
                 if (low < lowest) {
                     Stock lowestStock = new Stock(date, open, high, low, close, volume, adjClose);
                     lowest = low;
-                    String lbltextlow;
-                    lbltextlow = lowest.toString() + " on " + df.format(lowestStock.getDate(date));
-                    lblLowest.setText(lbltextlow);
+                    String lblTextlow;
+                    lblTextlow = lowest.toString() + " on " + df.format(lowestStock.getDate(date));
+                    lblLowest.setText(lblTextlow);
+
                 }
 
                 /*finds the latest date from the stock items*/
@@ -207,6 +215,7 @@ public class Controller {
                     Double latestSharePrice = latestStock.getClose();
                     String latestDay = df.format(latestDate);
                     System.out.println("Latest date is: " + latestDay + " and latest Share price is  " + latestSharePrice);
+                    lblLatestSharePrice.setText(latestSharePrice + "on " + latestDay);
                 }
 
                 /*Creates the stock object*/
