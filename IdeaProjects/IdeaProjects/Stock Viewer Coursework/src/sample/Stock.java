@@ -17,7 +17,7 @@ public class Stock extends Company {
 
 
         public Stock() {
-            this.date =  getDate(date);
+            this.date = null;
             this.open = 0.0;
             this.high = 0.0;
             this.low = 0.0;
@@ -39,7 +39,7 @@ public class Stock extends Company {
         {
             this.date = date;
         }
-        public Date getDate(Date date)
+        public Date getDate()
         {
             return this.date;
         }
