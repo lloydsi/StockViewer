@@ -13,6 +13,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import javafx.scene.chart.LineChart;
 
 public class Controller {
     /*  Loads all the SceneBuilder items */
@@ -84,7 +85,7 @@ public class Controller {
     private Stock highestStock;
     private Stock latestStock;
     private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    private Double highest = 0.0;
+    private Double highest= 0.0;
     private Date highestDate;
     private Double lowest = 1000000.0;
     private Date lowestDate;
@@ -117,7 +118,7 @@ public class Controller {
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    public void companyDetails(ActionEvent event) {
+    public ObservableList<Company> companyDetails(ActionEvent event) {
         /* Reads the csv file containing all the company details and uses the details to fill the TableView */
 
         BufferedReader br = null;
@@ -158,7 +159,13 @@ public class Controller {
             info.setLatestClosePrice(latestClosePrice);
             info.setLatestStockDate(latestDate);
             info.setAverageStock(average);
+            highest = 0.0;
+            lowest = 100000.0;
+            count = 0;
+            total = 0.0;
+            companyTableArray.add(info);
          }
+
 
         // fills name and symbol columns
         colCompanyName.setCellValueFactory(
@@ -172,19 +179,9 @@ public class Controller {
         );
         tblLatestSharePrice.setItems(companyDetails);
         listViewCompany.setItems(companyNames);
+        return companyTableArray;
     }
 
-
-    //------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    public String getSelection(MouseEvent mouseclick)  {
-        /* uses the selection from the Table View on Overview page and takes the filename*/
-        Company company = tblLatestSharePrice.getSelectionModel().getSelectedItem();
-        String selectedFilename = company.getFilename();
-        System.out.println(selectedFilename);
-        this.collectStockDetailsData(selectedFilename);
-        return selectedFilename;
-    }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -196,7 +193,10 @@ public class Controller {
         Company selectedCompany = companyDetails.get(pos);
         System.out.println("Filename is " + selectedCompany.getFilename());
         String selectedCoFilename = selectedCompany.getFilename();
+
+        /* Creates stock files and fills the stock table */
         this.collectStockDetailsData(selectedCoFilename);
+
         return selectedCoFileName;
     }
 
@@ -221,7 +221,7 @@ public class Controller {
         try {
             while ((line = br.readLine()) != null) {
                 String[] sto = line.split(",");
-                //System.out.println(sto[0]);
+
                 Date date = df.parse(sto[0]);
                 double open = Double.parseDouble(sto[1]);
                 double high = Double.parseDouble(sto[2]);
@@ -248,8 +248,7 @@ public class Controller {
             e.printStackTrace();
         }
 
-        count = 0;
-        total = 0.0;
+
         return stockDetails;
 
     }
@@ -266,11 +265,10 @@ public class Controller {
                     String lblText;
                     lblText = highest.toString() + " on " + df.format(highestDate);
                     lblHighest.setText(lblText);
-                    //System.out.println(stockLine.getName()+ "Highest stock is :  " + highestStock);
                 }
 
             }
-            highest = 0.0;
+
             return highestStock;
         }
 
@@ -286,10 +284,9 @@ public class Controller {
                     String lblTextLow;
                     lblTextLow = lowest.toString() + " on " + df.format(lowestDate);
                     lblLowest.setText(lblTextLow);
-                    //System.out.println("Lowest stock is :  " + lowestStock);
                 }
             }
-            lowest = 100000.0;
+
             return lowestStock;
         }
 
@@ -308,7 +305,6 @@ public class Controller {
                     Stock latestStock = stockLine;
                     latestClosePrice = latestStock.getClose();
                     String latestDay = df.format(latestDate);
-                    //System.out.println("Latest date is: " + latestDay + " and latest Share price is  " + latestSharePrice);
                     lblLatestSharePrice.setText(latestClosePrice + " on " + latestDay);
                 }
             }
@@ -340,7 +336,7 @@ public class Controller {
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
     public void printReport(ActionEvent event){
-           Report outReport = new Report(companyDetails);
+           Report outReport = new Report(companyTableArray);
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -353,7 +349,7 @@ public class Controller {
         if (stockDetails != null) {
            colDate.setCellValueFactory(
                    new PropertyValueFactory<Stock, Date>("date")
-            );
+           );
             colOpen.setCellValueFactory(
                     new PropertyValueFactory<Stock, Double>("open")
             );
