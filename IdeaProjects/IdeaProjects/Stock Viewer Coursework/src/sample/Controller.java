@@ -51,7 +51,7 @@ public class Controller {
     @FXML
     private TableColumn<Company, String> colStockSymbol;
     @FXML
-    private TableColumn<Company, String> colLatestSharePrice;
+    private TableColumn<Company, Double> colLatestSharePrice;
     @FXML
     private TableView tblStockDetails;
     @FXML
@@ -79,12 +79,16 @@ public class Controller {
     private ObservableList<Company> companyDetails;
     private ObservableList<String> companyNames;
     private ObservableList<Stock> stockDetails;
+    private ObservableList<Company> companyTableArray;
     private Stock lowestStock;
     private Stock highestStock;
     private Stock latestStock;
     private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     private Double highest = 0.0;
+    private Date highestDate;
     private Double lowest = 1000000.0;
+    private Date lowestDate;
+    private Double latestClosePrice;
     private Double total = 0.0;
     private int count = 0;
     private Double average;
@@ -120,57 +124,56 @@ public class Controller {
         String coName;
         String coStockSymbol;
         String coFilename;
-        try {
-            br = new BufferedReader(new FileReader("CompanyDetails.csv"));
+            try {
+                br = new BufferedReader(new FileReader("CompanyDetails.csv"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             String line;
             companyDetails = FXCollections.observableArrayList();
             companyNames = FXCollections.observableArrayList();
-            while ((line = br.readLine()) != null) {
-                String[] co = line.split(",");
-                coStockSymbol = co[0];
-                coName = co[1];
-                coFilename = co[2];
-                Company company = new Company(coStockSymbol, coName, coFilename);
-                // creates arraylists
-                companyNames.add(coName);
-                companyDetails.add(company);
-                for (Company info : companyDetails) {
-                    String filename = company.getFilename();
-                    collectStockDetailsData(filename);
-                    System.out.println(filename);
-                    /*company.setHighestStockDate(highestStock.getHighestStockDate());
-                    company.setHighestStockValue(highestStock.getHighestStockValue());
-
-                    /*company.setLowestStockDate(lowestStock.getLowestStockDate());
-                    company.setLowestStockValue(lowestStock.getLowestStockValue());
-                    company.setLatestClosePrice(latestStock.getLatestClosePrice());
-                    company.setLatestStockDate(latestStock.getLatestStockDate());*/
-                    //company.setAverageStock();
-                }
-            }
-
-            // fills name and symbol columns
-            colCompanyName.setCellValueFactory(
-                    new PropertyValueFactory<Company, String>("name")
-            );
-            colStockSymbol.setCellValueFactory(
-                    new PropertyValueFactory<Company, String>("stockSymbol")
-            );
-            /*colLatestSharePrice.setCellValueFactory(
-                    new PropertyValueFactory<Company, String>("LatestSharePrice")
-            );*/
-            tblLatestSharePrice.setItems(companyDetails);
-            listViewCompany.setItems(companyNames);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } finally {
+            companyTableArray = FXCollections.observableArrayList();
             try {
-                br.close();
+                while ((line = br.readLine()) != null) {
+                    String[] co = line.split(",");
+                    coStockSymbol = co[0];
+                    coName = co[1];
+                    coFilename = co[2];
+                    Company company = new Company(coStockSymbol, coName, coFilename);
+                    // creates arraylists
+                    companyNames.add(coName);
+                    companyDetails.add(company);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        for (Company info : companyDetails) {
+            filename = info.getFilename();
+            collectStockDetailsData(filename);
+            System.out.println(filename);
+            info.setHighestStockDate(highestDate);
+            info.setHighestStockValue(highest);
+            info.setLowestStockDate(lowestDate);
+            info.setLowestStockValue(lowest);
+            info.setLatestClosePrice(latestClosePrice);
+            info.setLatestStockDate(latestDate);
+            info.setAverageStock(average);
+         }
+
+        // fills name and symbol columns
+        colCompanyName.setCellValueFactory(
+                new PropertyValueFactory<Company, String>("name")
+        );
+        colStockSymbol.setCellValueFactory(
+                new PropertyValueFactory<Company, String>("stockSymbol")
+        );
+        colLatestSharePrice.setCellValueFactory(
+                new PropertyValueFactory<Company, Double>("latestClosePrice")
+        );
+        tblLatestSharePrice.setItems(companyDetails);
+        listViewCompany.setItems(companyNames);
     }
+
 
     //------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -237,6 +240,7 @@ public class Controller {
                 total = total + stock.getClose();
                 count = count + 1;
                 this.getAverage(stockDetails);
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -258,10 +262,11 @@ public class Controller {
                 if (stockLine.getHigh() > highest) {
                     Stock highestStock = stockLine;
                     highest = stockLine.getHigh();
+                    highestDate = highestStock.getDate();
                     String lblText;
-                    lblText = highest.toString() + " on " + df.format(highestStock.getDate());
+                    lblText = highest.toString() + " on " + df.format(highestDate);
                     lblHighest.setText(lblText);
-                    System.out.println(stockLine.getName()+ "Highest stock is :  " + highestStock);
+                    //System.out.println(stockLine.getName()+ "Highest stock is :  " + highestStock);
                 }
 
             }
@@ -277,8 +282,9 @@ public class Controller {
                 if (stockLine.getLow() < lowest) {
                     Stock lowestStock = stockLine;
                     lowest = stockLine.getLow();
+                    lowestDate = lowestStock.getDate();
                     String lblTextLow;
-                    lblTextLow = lowest.toString() + " on " + df.format(lowestStock.getDate());
+                    lblTextLow = lowest.toString() + " on " + df.format(lowestDate);
                     lblLowest.setText(lblTextLow);
                     //System.out.println("Lowest stock is :  " + lowestStock);
                 }
@@ -300,10 +306,10 @@ public class Controller {
                 if (stockLine.getDate().after(latestDate)) {
                     latestDate = stockLine.getDate();
                     Stock latestStock = stockLine;
-                    Double latestSharePrice = latestStock.getClose();
+                    latestClosePrice = latestStock.getClose();
                     String latestDay = df.format(latestDate);
                     //System.out.println("Latest date is: " + latestDay + " and latest Share price is  " + latestSharePrice);
-                    lblLatestSharePrice.setText(latestSharePrice + " on " + latestDay);
+                    lblLatestSharePrice.setText(latestClosePrice + " on " + latestDay);
                 }
             }
             try {
@@ -332,8 +338,10 @@ public class Controller {
         return average;
     }
 
-
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+    public void printReport(ActionEvent event){
+           Report outReport = new Report(companyDetails);
+    }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
 

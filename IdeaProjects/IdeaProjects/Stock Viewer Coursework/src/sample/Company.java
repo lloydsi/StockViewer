@@ -14,7 +14,9 @@ import java.util.Date;
  * Created by sian- on 11/03/2017.
  */
 public class Company {
-       private String name;
+        private int coNumber;
+        private int counter=0;
+        private String name;
         private String stockSymbol;
         private String filename;
         private Double latestClosePrice;
@@ -26,10 +28,11 @@ public class Company {
         private Double highestStockValue;
 
         public Company()
-        {
+        {   this.coNumber = counter;
             this.name = "";
             this.stockSymbol = "";
             this.filename="";
+            this.counter = counter ++;
         }
 
         public Company(String name, String stockSymbol)
@@ -43,6 +46,13 @@ public class Company {
              this.name = name;
              this.filename = filename;
         }
+
+        public Company(String stockSymbol, String name, Double latestClosePrice) {
+            this.stockSymbol = stockSymbol;
+            this.name = name;
+            this.latestClosePrice = latestClosePrice;
+
+        }
          public Company (String filename)
          {
               this.filename = filename;
@@ -50,6 +60,7 @@ public class Company {
 
 
         /*Getters and Setters*/
+        public int getCoNumber(){ return coNumber;}
         public void setLatestClosePrice(Double latestClosePrice){
             this.latestClosePrice = latestClosePrice;
         }
@@ -156,7 +167,10 @@ public class Company {
         @Override
         public String toString()
         {
-            return ("\n\nCompany Name: " + this.name + "\nStock Symbol: "+ this.stockSymbol);
+            return "\n\nCompany Number:  " + coNumber +"\nCompany Name: " + this.name + "\nStock Symbol: "+ this.stockSymbol +
+                    "\nHighest:  " + this.highestStockValue + "\nDate of Highest:  " + this.highestStockDate +
+                "\nLowest:  " + this.lowestStockValue + "\nDate of Lowest:  " + this.lowestStockDate + "\nAverage Close:  " + this.AverageStock +"" +
+                "\nClose:  " + this.latestClosePrice +".";
         }
     }
 
