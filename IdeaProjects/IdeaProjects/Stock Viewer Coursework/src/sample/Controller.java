@@ -3,17 +3,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import java.io.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import javafx.scene.chart.LineChart;
+
 
 public class Controller {
     /*  Loads all the SceneBuilder items */
@@ -52,29 +57,33 @@ public class Controller {
     @FXML
     private TableColumn<Company, String> colStockSymbol;
     @FXML
-    private TableColumn<Company, Double> colLatestSharePrice;
+    private TableColumn<Company, BigDecimal> colLatestSharePrice;
     @FXML
     private TableView tblStockDetails;
     @FXML
-    private TableColumn<Stock, Date> colDate;
+    private TableColumn<Stock, String> colDate;
     @FXML
-    private TableColumn<Stock, Double> colOpen;
+    private TableColumn<Stock, BigDecimal> colOpen;
     @FXML
-    private TableColumn<Stock, Double> colHigh;
+    private TableColumn<Stock, BigDecimal> colHigh;
     @FXML
-    private TableColumn<Stock, Double> colLow;
+    private TableColumn<Stock, BigDecimal> colLow;
     @FXML
-    private TableColumn<Stock, Double> colClose;
+    private TableColumn<Stock, BigDecimal> colClose;
     @FXML
     private TableColumn<Stock, Double> colVolume;
     @FXML
-    private TableColumn<Stock, Double> colAdjClose;
+    private TableColumn<Stock, BigDecimal> colAdjClose;
+    @FXML
+    private BarChart<String, BigDecimal> chartStockMonitoring;
+    @FXML
+    private Button btnLineChart;
 
     /* loads variables */
     private String filename;
     private String selectedFilename;
     private String[] stock;
-    private Double latestSharePrice;
+    private BigDecimal latestSharePrice;
     private ObservableList<Company> selectedCompanyDetails;
     private ObservableList<Stock> selectedStockDetails;
     private ObservableList<Company> companyDetails;
@@ -85,14 +94,14 @@ public class Controller {
     private Stock highestStock;
     private Stock latestStock;
     private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    private Double highest= 0.0;
+    private BigDecimal highest= (BigDecimal.valueOf(0.0)).setScale(2, BigDecimal.ROUND_HALF_UP);;
     private Date highestDate;
-    private Double lowest = 1000000.0;
+    private BigDecimal lowest = (BigDecimal.valueOf(1000000.0)).setScale(2, BigDecimal.ROUND_HALF_UP);;
     private Date lowestDate;
-    private Double latestClosePrice;
-    private Double total = 0.0;
+    private BigDecimal latestClosePrice;
+    private BigDecimal total = (BigDecimal.valueOf(0.0)).setScale(2, BigDecimal.ROUND_HALF_UP);;
     private int count = 0;
-    private Double average;
+    private BigDecimal average;
     private Date latestDate;
 
 
@@ -159,12 +168,14 @@ public class Controller {
             info.setLatestClosePrice(latestClosePrice);
             info.setLatestStockDate(latestDate);
             info.setAverageStock(average);
-            highest = 0.0;
-            lowest = 100000.0;
-            count = 0;
-            total = 0.0;
             companyTableArray.add(info);
+            highest = BigDecimal.valueOf(0.0);
+            lowest = BigDecimal.valueOf(100000.0);
+            count = 0;
+            total = BigDecimal.valueOf(0.0);
+
          }
+         this.btnForLineChart();
 
 
         // fills name and symbol columns
@@ -175,7 +186,7 @@ public class Controller {
                 new PropertyValueFactory<Company, String>("stockSymbol")
         );
         colLatestSharePrice.setCellValueFactory(
-                new PropertyValueFactory<Company, Double>("latestClosePrice")
+                new PropertyValueFactory<Company, BigDecimal>("latestClosePrice")
         );
         tblLatestSharePrice.setItems(companyDetails);
         listViewCompany.setItems(companyNames);
@@ -202,7 +213,7 @@ public class Controller {
 
     //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    private ObservableList collectStockDetailsData(String selectedFilename) {
+    private void collectStockDetailsData(String selectedFilename) {
         /* creates a new stock from a csv file */
         BufferedReader br = null;
         try {
@@ -216,49 +227,65 @@ public class Controller {
             e.printStackTrace();
         }
         String line;
-            stockDetails = FXCollections.observableArrayList();
+        stockDetails = FXCollections.observableArrayList();
 
         try {
             while ((line = br.readLine()) != null) {
                 String[] sto = line.split(",");
+                //int decimalsToConsider = 2;
+                BigDecimal open1 = new BigDecimal((sto[1]));
+                BigDecimal open = open1.setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal high1 = new BigDecimal((sto[2]));
+                BigDecimal high = high1.setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal low1 = new BigDecimal((sto[3]));
+                BigDecimal low = low1.setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal close1 = new BigDecimal((sto[4]));
+                BigDecimal close = close1.setScale(2, BigDecimal.ROUND_HALF_UP);
+                Double volume = Double.parseDouble(sto[5]);
+                BigDecimal adjClose1 = new BigDecimal((sto[6]));
+                BigDecimal adjClose = adjClose1.setScale(2, BigDecimal.ROUND_HALF_UP);
+                Date date = null;
+                try {
+                    date = df.parse(sto[0]);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                String dateStr = sto[0];
 
-                Date date = df.parse(sto[0]);
-                double open = Double.parseDouble(sto[1]);
-                double high = Double.parseDouble(sto[2]);
-                double low = Double.parseDouble(sto[3]);
-                double close = Double.parseDouble(sto[4]);
-                double volume = Double.parseDouble(sto[5]);
-                double adjClose = Double.parseDouble(sto[6]);
+                Stock stock = new Stock(date, dateStr, open, high, low, close, volume, adjClose);
+                createStockObject(stock);
 
-                /*Creates the stock object*/
-                Stock stock = new Stock(date, open, high, low, close, volume, adjClose);
-                stockDetails.add(stock);
-                this.companyStockDetails(stockDetails);
-                this.findHighest(stockDetails);
-                this.findLowest(stockDetails);
-                this.findLatest(stockDetails);
-                total = total + stock.getClose();
-                count = count + 1;
-                this.getAverage(stockDetails);
+
 
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
         }
-
-
-        return stockDetails;
-
     }
+//-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+        public ObservableList<Stock> createStockObject(Stock stock){
+                /*Creates the stock object*/
+
+                stockDetails.add(stock);
+
+                this.companyStockDetails(stockDetails);
+                this.findHighest(stockDetails);
+                this.findLowest(stockDetails);
+                this.findLatest(stockDetails);
+                total = total.add(stock.getClose());
+                count = count + 1;
+                this.getAverage(stockDetails);
+                return stockDetails;
+
+            }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
         public Stock findHighest(ObservableList<Stock>stockDetails) {
        /* Finds the highest stock from the stock item */
             for(Stock stockLine:stockDetails) {
-                if (stockLine.getHigh() > highest) {
+                if ((stockLine.getHigh()).compareTo(highest) >0) {
                     Stock highestStock = stockLine;
                     highest = stockLine.getHigh();
                     highestDate = highestStock.getDate();
@@ -277,7 +304,7 @@ public class Controller {
         public Stock findLowest(ObservableList<Stock>stockDetails) {
         /*finds the lowest stock from the stock item*/
             for (Stock stockLine : stockDetails) {
-                if (stockLine.getLow() < lowest) {
+                if ((stockLine.getLow()).compareTo(lowest) <0) {
                     Stock lowestStock = stockLine;
                     lowest = stockLine.getLow();
                     lowestDate = lowestStock.getDate();
@@ -296,8 +323,8 @@ public class Controller {
         /*finds the latest date from the stock items*/
             try {
                 latestDate=df.parse("1900-01-01");
-            } catch (ParseException e) {
-                e.printStackTrace();
+            }catch (ParseException e) {
+               e.printStackTrace();
             }
             for (Stock stockLine : stockDetails) {
                 if (stockLine.getDate().after(latestDate)) {
@@ -308,11 +335,6 @@ public class Controller {
                     lblLatestSharePrice.setText(latestClosePrice + " on " + latestDay);
                 }
             }
-            try {
-                latestDate=df.parse("1900-01-01");
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
             return latestStock;
             }
 
@@ -320,13 +342,14 @@ public class Controller {
 
         /*finds the average stock from closing amount using total counted above*/
 
-       public double getAverage(ObservableList<Stock>StockDetails){
+       public BigDecimal getAverage(ObservableList<Stock>StockDetails){
 
        if (count != 0) {
-            average = total / count;
-            Long newAverage = Math.round(average);
+            BigDecimal average1;
+            average = total.divide(BigDecimal.valueOf(count), 2, RoundingMode.CEILING);
+            //BigDecimal average = average1.setScale(2, BigDecimal.ROUND_HALF_UP);
             String lbltextAve;
-            lbltextAve = String.valueOf(newAverage);
+            lbltextAve = String.valueOf(average);
             lblAverage.setText(lbltextAve);
         } else {
             System.out.println("Average cannot be calculated.");
@@ -345,28 +368,29 @@ public class Controller {
     /* uses stock data to fill the stock details table */
     //ObservableList<Stock> stockDetails;
     //stockDetails = this.collectStockDetailsData();
-        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+
         if (stockDetails != null) {
-           colDate.setCellValueFactory(
-                   new PropertyValueFactory<Stock, Date>("date")
+
+            colDate.setCellValueFactory(
+                   new PropertyValueFactory<Stock, String>("dateStr")
            );
             colOpen.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("open")
+                    new PropertyValueFactory<Stock, BigDecimal>("open")
             );
             colHigh.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("high")
+                    new PropertyValueFactory<Stock, BigDecimal>("high")
             );
             colLow.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("low")
+                    new PropertyValueFactory<Stock, BigDecimal>("low")
             );
             colClose.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("close")
+                    new PropertyValueFactory<Stock , BigDecimal>("close")
             );
             colVolume.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("volume")
+                    new PropertyValueFactory<Stock , Double>("volume")
             );
             colAdjClose.setCellValueFactory(
-                    new PropertyValueFactory<Stock, Double>("adjClose")
+                    new PropertyValueFactory<Stock , BigDecimal>("adjClose")
             );
             tblStockDetails.setItems(stockDetails);
         }
@@ -374,10 +398,46 @@ public class Controller {
             System.out.println("There is no data to display");
         }
 
-            }}
+            }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+        public void btnForLineChart(){
+            XYChart.Series<String,BigDecimal> series = new XYChart.Series<String,BigDecimal>();
+            chartStockMonitoring.getData().clear();
+            if (companyTableArray != null && companyTableArray.size()!=0){
+            for(Company co:companyTableArray) {
+                series.getData().add(new XYChart.Data<String, BigDecimal>(co.getStockSymbol(), co.getAverageStock()));
+            }
+            chartStockMonitoring.getData().add(series);
+            series.setName("Company Average Stock ");
+
+        }}
+//----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    public void btnForLineChartHighest(ActionEvent event){
+        XYChart.Series<String,BigDecimal> series1 = new XYChart.Series<String,BigDecimal>();
+        btnForLineChart();
+        if (companyTableArray != null && companyTableArray.size()!=0){
+        for(Company co:companyTableArray) {
+            series1.getData().add(new XYChart.Data<String, BigDecimal>(co.getStockSymbol(), co.getHighestStockValue()));
+        }
+        chartStockMonitoring.getData().add(series1);
+        series1.setName("Company Highest Stock ");
+
+    }}
+//----------------------------------------------------------------------------------------------------------------------------------------------------------
+    public void btnForLineChartLowest(ActionEvent event){
+        XYChart.Series<String,BigDecimal> series2 = new XYChart.Series<String,BigDecimal>();
+        btnForLineChart();
+        if (companyTableArray != null && companyTableArray.size()!=0){
+        for(Company co:companyTableArray) {
+            series2.getData().add(new XYChart.Data<String, BigDecimal>(co.getStockSymbol(), co.getLowestStockValue()));
+        }
+        chartStockMonitoring.getData().add(series2);
+        series2.setName("Company Lowest Stock ");
+
+    }}}
 
 
 

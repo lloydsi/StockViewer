@@ -4,6 +4,9 @@ package sample;
 import groovyjarjarasm.asm.tree.TryCatchBlockNode;
 import javafx.collections.ObservableList;
 
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -14,18 +17,19 @@ import java.util.Date;
  * Created by sian- on 11/03/2017.
  */
 public class Company {
+        private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         private int coNumber;
         private int counter=0;
         private String name;
         private String stockSymbol;
         private String filename;
-        private Double latestClosePrice;
+        private BigDecimal latestClosePrice;
         private Date latestStockDate;
         private Date highestStockDate;
         private Date lowestStockDate;
-        private Double AverageStock;
-        private Double lowestStockValue;
-        private Double highestStockValue;
+        private BigDecimal AverageStock;
+        private BigDecimal lowestStockValue;
+        private BigDecimal highestStockValue;
 
         public Company()
         {   this.coNumber = counter;
@@ -47,7 +51,7 @@ public class Company {
              this.filename = filename;
         }
 
-        public Company(String stockSymbol, String name, Double latestClosePrice) {
+        public Company(String stockSymbol, String name, BigDecimal latestClosePrice) {
             this.stockSymbol = stockSymbol;
             this.name = name;
             this.latestClosePrice = latestClosePrice;
@@ -61,11 +65,11 @@ public class Company {
 
         /*Getters and Setters*/
         public int getCoNumber(){ return coNumber;}
-        public void setLatestClosePrice(Double latestClosePrice){
+        public void setLatestClosePrice(BigDecimal latestClosePrice){
             this.latestClosePrice = latestClosePrice;
         }
 
-        public Double getLatestClosePrice(){
+        public BigDecimal getLatestClosePrice(){
             return latestClosePrice;
         }
 
@@ -84,22 +88,22 @@ public class Company {
         public void setLowestStockDate (Date lowestStockDate){
             this.lowestStockDate = lowestStockDate;
         }
-        public void setLowestStockValue(Double lowestStockValue){
+        public void setLowestStockValue(BigDecimal lowestStockValue){
             this.lowestStockValue = lowestStockValue;
         }
-        public Double getLowestStockValue(){
+        public BigDecimal getLowestStockValue(){
             return lowestStockValue;
         }
-        public void setHighestStockValue(Double highestStockValue){
+        public void setHighestStockValue(BigDecimal highestStockValue){
             this.highestStockValue = highestStockValue;
         }
-        public Double getHighestStockValue(){
+        public BigDecimal getHighestStockValue(){
             return highestStockValue;
         }
-        public void  setLatestSharePrice(Double latestSharePrice){
+        public void  setLatestSharePrice(BigDecimal latestSharePrice){
             this.latestClosePrice = latestSharePrice;
         }
-        public Double getLatestSharePrice(){
+        public BigDecimal getLatestSharePrice(){
             return latestClosePrice;
         }
         public void setLatestStockDate(Date latestStockDate){
@@ -109,10 +113,10 @@ public class Company {
             return latestStockDate;
         }
 
-        public void setAverageStock(Double AverageStock){
+        public void setAverageStock(BigDecimal AverageStock){
             this.AverageStock = AverageStock;
         }
-        public Double getAverageStock(){
+        public BigDecimal getAverageStock(){
             return AverageStock;
         }
 
@@ -168,8 +172,8 @@ public class Company {
         public String toString()
         {
             return "\n\nCompany Number:  " + coNumber +"\nCompany Name: " + this.name + "\nStock Symbol: "+ this.stockSymbol +
-                    "\nHighest:  " + this.highestStockValue + "\nDate of Highest:  " + this.highestStockDate +
-                "\nLowest:  " + this.lowestStockValue + "\nDate of Lowest:  " + this.lowestStockDate + "\nAverage Close:  " + this.AverageStock +"" +
+                    "\nHighest:  " + this.highestStockValue + "\nDate of Highest:  " + df.format(this.highestStockDate) +
+                "\nLowest:  " + this.lowestStockValue + "\nDate of Lowest:  " + df.format(this.lowestStockDate) + "\nAverage Close:  " + this.AverageStock +"" +
                 "\nClose:  " + this.latestClosePrice +".";
         }
     }

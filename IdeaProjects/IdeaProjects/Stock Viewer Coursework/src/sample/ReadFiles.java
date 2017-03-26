@@ -7,9 +7,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.math.BigDecimal;
 /**
  * Created by sian- on 16/03/2017.
  */
@@ -24,15 +26,21 @@ public class ReadFiles {
             Scanner readIn = new Scanner(new BufferedReader(new FileReader(selectedFilename)));
             while (readIn.hasNextLine()) {
                 String line = readIn.nextLine();
-                String[] data = line.split(",");
-                Date date = StringToDate.changeStringToDate(data[0]);
-                double open = Double.parseDouble(data[1]);
-                double high = Double.parseDouble(data[2]);
-                double low = Double.parseDouble(data[3]);
-                double close = Double.parseDouble(data[4]);
-                double volume = Double.parseDouble(data[5]);
-                double adjClose = Double.parseDouble(data[6]);
-                Stock stockRecord = new Stock(date, open, high, low, close, volume, adjClose);
+                String[] sto = line.split(",");
+                Date date = StringToDate.changeStringToDate(sto[0]);
+                String dateStr = sto[0];
+                BigDecimal open = new BigDecimal((sto[1]));
+                BigDecimal open2 = open.setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal high = new BigDecimal((sto[2]));
+                BigDecimal high2 = high.setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal low = new BigDecimal((sto[3]));
+                BigDecimal low2 = low.setScale(2, BigDecimal.ROUND_HALF_UP);
+                BigDecimal close = new BigDecimal((sto[4]));
+                BigDecimal close2 = high.setScale(2, BigDecimal.ROUND_HALF_UP);
+                Double volume = Double.parseDouble(sto[5]);
+                BigDecimal adjClose = new BigDecimal((sto[6]));
+                BigDecimal adjClose2 = high.setScale(2, BigDecimal.ROUND_HALF_UP);
+                Stock stockRecord = new Stock(date, dateStr, open, high, low, close, volume, adjClose);
                 stockList.add(stockRecord);
                 System.out.println(stockList);
             }

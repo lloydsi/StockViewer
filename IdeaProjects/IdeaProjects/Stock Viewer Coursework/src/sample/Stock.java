@@ -1,5 +1,6 @@
 package sample;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -8,25 +9,28 @@ import java.util.Date;
 public class Stock extends Company {
 
         private Date date;
-        private double open;
-        private double high;
-        private double low;
-        private double close;
-        private double volume;
-        private double adjClose;
+        private String dateStr;
+        private BigDecimal open;
+        private BigDecimal high;
+        private BigDecimal low;
+        private BigDecimal close;
+        private Double  volume;
+        private BigDecimal adjClose;
 
 
         public Stock() {
             this.date = null;
-            this.open = 0.0;
-            this.high = 0.0;
-            this.low = 0.0;
-            this.close = 0.0;
-            this.volume = 0.0;
-            this.adjClose = 0.0;
+            this.dateStr = "";
+            this.open = BigDecimal.valueOf(0.00);
+            this.high = BigDecimal.valueOf(0.00);
+            this.low = BigDecimal.valueOf(0.00);
+            this.close = BigDecimal.valueOf(0.00);
+            this.volume = 00.00;
+            this.adjClose = BigDecimal.valueOf(0.00);
         }
-        public Stock(Date date, double open, double high, double low, double close, double volume, double adjClose){
+        public Stock(Date date, String dateStr, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, Double volume, BigDecimal adjClose){
             this.date = date;
+            this.dateStr = dateStr;
             this.open = open;
             this.high = high;
             this.low = low;
@@ -43,52 +47,60 @@ public class Stock extends Company {
         {
             return this.date;
         }
-        public void setOpen(double open)
+    public void setDateStr(String dateStr)
+    {
+        this.dateStr = dateStr;
+    }
+    public String getDateStr()
+    {
+        return this.dateStr;
+    }
+        public void setOpen(BigDecimal open)
         {
             this.open = open;
         }
-        public double getOpen()
+        public BigDecimal getOpen()
         {
             return this.open;
         }
-        public void setHigh(double high)
+        public void setHigh(BigDecimal high)
         {
             this.high = high;
         }
-        public double getHigh()
+        public BigDecimal getHigh()
         {
             return this.high;
         }
-        public void setLow(double low)
+        public void setLow(BigDecimal low)
         {
             this.low = low;
         }
-        public double getLow()
+        public BigDecimal getLow()
         {
             return this.low;
         }
-        public void setClose(double close)
+        public void setClose(BigDecimal close)
         {
             this.close = close;
         }
-        public double getClose()
+        public BigDecimal getClose()
         {
             return this.close;
         }
-        public void setVolume(double volume)
+        public void setVolume(Double volume)
         {
             this.volume = volume;
         }
-        public double getVolume()
+        public Double getVolume()
         {
             return this.volume;
         }
-        public void setAdjClose(double AdjClose)
+        public void setAdjClose(BigDecimal AdjClose)
         {
             this.adjClose = adjClose;
         }
 
-        public double getAdjClose()
+        public BigDecimal getAdjClose()
         {
             return this.adjClose;
         }
