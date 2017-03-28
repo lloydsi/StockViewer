@@ -171,10 +171,10 @@ public class Company {
         @Override
         public String toString()
         {
-            return "\r\nCompany Name: " + this.name + "\r\nStock Symbol: "+ this.stockSymbol +
-                    "\r\nHighest:  " + this.highestStockValue + "\r\nDate of Highest:  " + df1.format(this.highestStockDate) +
-                "\r\nLowest:  " + this.lowestStockValue + "\r\nDate of Lowest:  " + df1.format(this.lowestStockDate) + "\r\nAverage Close:  " + this.AverageStock +"" +
-                "\r\nClose:  " + this.latestClosePrice +".";
+            return "\r\nCompany Name:     " + this.name + "\r\nStock Symbol:     "+ this.stockSymbol +
+                    "\r\nHighest:          " + this.highestStockValue + "\r\nDate of Highest:  " + df1.format(this.highestStockDate) +
+                "\r\nLowest:           " + this.lowestStockValue + "\r\nDate of Lowest:   " + df1.format(this.lowestStockDate) + "\r\nAverage Close:    " + this.AverageStock +"" +
+                "\r\nClose:            " + this.latestClosePrice +".";
         }
     }
 
