@@ -12,19 +12,9 @@ import javafx.stage.FileChooser;
 import java.io.*;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
-import javafx.scene.control.Tooltip;
-
-import javafx.util.Callback;
-import javafx.util.StringConverter;
-
-import static java.util.UUID.fromString;
 
 
 public class Controller {
@@ -33,6 +23,8 @@ public class Controller {
     private MenuItem menuOpenCSV;
     @FXML
     private MenuItem menuFileClose;
+    @FXML
+    private MenuItem menuAbout;
     @FXML
     private Menu menuHelp;
     @FXML
@@ -116,6 +108,7 @@ public class Controller {
     private BigDecimal average;
     private LocalDate latestDate;
     private LocalDate earliestDate;
+    private String firstFilename;
 
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -178,6 +171,8 @@ public class Controller {
         this.setCompanyDetails(companyDetails);
         this.completeTableLatestSharePrices(companyDetails);
         this.completeCompanyNamesList(companyNames);
+        this.collectStockDetailsData(firstFilename);
+        this.companyStockDetails(stockDetails);
         return companyDetails;
 
     }
@@ -193,6 +188,7 @@ public class Controller {
             filename = info.getFilename();
             collectStockDetailsData(filename);
             System.out.println(filename);
+            info.setFilename(filename);
             info.setHighestStockDate(highestDate);
             info.setHighestStockValue(highest);
             info.setLowestStockDate(lowestDate);
@@ -201,16 +197,22 @@ public class Controller {
             info.setLatestStockDate(latestDate);
             info.setAverageStock(average);
             info.setEarliestStockDate(earliestDate);
+            this.btnForLineChart();
             companyTableArray.add(info);
-            highest = BigDecimal.valueOf(0.0);
-            lowest = BigDecimal.valueOf(100000.0);
-            count = 0;
-            total = BigDecimal.valueOf(0.0);
+            this.resetCoVariables();
         }
-        this.btnForLineChart();
+
+
         return companyTableArray;
     }
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+    public void resetCoVariables(){
 
+        highest = BigDecimal.valueOf(0.0);
+        lowest = BigDecimal.valueOf(100000.0);
+        count = 0;
+        total = BigDecimal.valueOf(0.0);
+    }
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
     public void completeTableLatestSharePrices(ObservableList<Company> companyDetails) {
         // fills name and symbol columns
@@ -230,20 +232,26 @@ public class Controller {
     }
     //-----------------------------------------------------------------------------------------------------------------------------------------------------
 
-    public void completeCompanyNamesList(ObservableList<String> companyNames){
+    public String completeCompanyNamesList(ObservableList<String> companyNames){
                   listViewCompany.setItems(companyNames);
+                  listViewCompany.getSelectionModel().selectFirst();
+                  firstFilename = companyDetails.get(0).getFilename();
+                  return firstFilename;
+
     }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public String getSelectionListView(MouseEvent mouseClick) {
         /* gets the selection of Company name from the List View and then finds its file */
+        resetCoVariables();
         Object Selected = listViewCompany.getSelectionModel().getSelectedItem();
         String selectedCoFileName = Selected.toString();
         int pos = companyNames.indexOf(selectedCoFileName);
         Company selectedCompany = companyDetails.get(pos);
         System.out.println("Filename is " + selectedCompany.getFilename());
         String selectedCoFilename = selectedCompany.getFilename();
+
         /* Creates stock files and fills the stock table */
         this.collectStockDetailsData(selectedCoFilename);
         return selectedCoFileName;
@@ -286,9 +294,13 @@ public class Controller {
                 String dateStr = sto[0];
 
                 Stock stock = new Stock(date, dateStr, open, high, low, close, volume, adjClose);
-
                 createStockObject(stock);
+                stockDetails.add(stock);
             }
+            companyStockDetails(stockDetails);
+            //resetCoVariables();
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -297,9 +309,9 @@ public class Controller {
 
         public ObservableList<Stock> createStockObject(Stock stock){
                 /*Creates the stock object*/
-                stockDetails.add(stock);
-                this.companyStockDetails(stockDetails);
-                this.findHighest(stockDetails);
+
+                //this.companyStockDetails(stockDetails);
+                this.findHighest(stockDetails);  /// sends all stocks through a sorter to find highest etc
                 this.findLowest(stockDetails);
                 this.findLatest(stockDetails);
                 this.findEarliest(stockDetails,latestDate);
@@ -325,6 +337,7 @@ public class Controller {
 
                 }
 
+
             }
 
             return highestStock;
@@ -343,6 +356,7 @@ public class Controller {
                     lblTextLow = lowest.toString() + " on " + df1.format(lowestDate);
                     lblLowest.setText(lblTextLow);
                 }
+
             }
 
             return lowestStock;
@@ -380,8 +394,9 @@ public class Controller {
         }
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------
-        public void searchEarliestUserDate(ActionEvent selectFromDate){
-
+        public void seeAbout (ActionEvent e){
+            MessageBox aboutMsg = new MessageBox();
+            aboutMsg.show("See latest stock prices.\r\nSee historical details. \r\nSee graphical details.","Stock Viewer 2017");
         }
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------
@@ -413,8 +428,6 @@ public class Controller {
 
     private void companyStockDetails(ObservableList<Stock> stockDetails){
     /* uses stock data to fill the stock details table */
-    //ObservableList<Stock> stockDetails;
-    //stockDetails = this.collectStockDetailsData();
 
         if (stockDetails != null) {
 
@@ -494,6 +507,7 @@ public class Controller {
 
         }}
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 

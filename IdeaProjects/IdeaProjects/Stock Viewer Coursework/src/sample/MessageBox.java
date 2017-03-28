@@ -8,12 +8,16 @@ import javafx.geometry.*;
  * Created by sian- on 11/03/2017.
  */
 public class MessageBox {
+    String message;
+    String title;
 
         public static void show (String message, String title) {
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(StageStyle.UTILITY);
             stage.setTitle(title);
-            stage.setMinWidth(250);
+            stage.setMinWidth(400);
+            stage.setMinHeight(200);
 
             Label lbl = new Label();
             lbl.setText(message);
@@ -24,7 +28,7 @@ public class MessageBox {
 
             VBox pane = new VBox(20);
             pane.getChildren().addAll(lbl, btnOK);
-            pane.setAlignment(Pos.CENTER);
+            pane.setAlignment(Pos.TOP_CENTER);
 
             Scene scene = new Scene(pane);
             stage.setScene(scene);

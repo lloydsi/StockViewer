@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -38,23 +39,31 @@
                <children>
                   <MenuBar prefHeight="23.0" prefWidth="880.0">
                     <menus>
-                      <Menu fx:id="menuFile" mnemonicParsing="false" text="File">
+                      <Menu fx:id="menuFile" mnemonicParsing="false" text="Start">
                         <items>
-                          <MenuItem fx:id="menuOpenCSV" mnemonicParsing="false" onAction="#companyDetails" text="Add CSV Stock File" />
-                              <MenuItem fx:id="menuFileClose" mnemonicParsing="false" text="Close" />
+                          <MenuItem fx:id="menuOpenCSV" mnemonicParsing="false" onAction="#companyDetails" text="Open Stock Files" />
                         </items>
                       </Menu>
                       <Menu mnemonicParsing="false" text="Help">
                         <items>
-                          <MenuItem mnemonicParsing="false" text="About" />
+                          <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#seeAbout" text="About" />
                         </items>
                       </Menu>
                     </menus>
                   </MenuBar>
-                  <Label alignment="TOP_LEFT" prefHeight="35.0" prefWidth="858.0" text="FTSE 100 Stock Index" textFill="#2b0675">
+                  <Label prefHeight="35.0" prefWidth="1980.0" style="-fx-background-color: #2b0675;" text="FTSE 100 Stock Index" textAlignment="CENTER" textFill="#efeef2">
                      <font>
                         <Font size="24.0" />
-                     </font></Label>
+                     </font>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                     </padding></Label>
                </children>
                <padding>
                   <Insets right="20.0" />
@@ -162,21 +171,21 @@
                                     </TableView>
                                     <HBox fx:id="hBoxDates" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                        <children>
-                                          <Label text="From:">
+                                          <Label disable="true" text="From:">
                                              <HBox.margin>
                                                 <Insets />
                                              </HBox.margin>
                                           </Label>
-                                          <DatePicker fx:id="fromDatePicker" editable="false" onAction="#searchEarliestUserDate" promptText="Date from ...">
+                                          <DatePicker fx:id="fromDatePicker" disable="true" editable="false" promptText="Date from ...">
                                              <HBox.margin>
                                                 <Insets left="20.0" />
                                              </HBox.margin>
                                           </DatePicker>
-                                          <Label text="To:">
+                                          <Label disable="true" text="To:">
                                              <padding>
                                                 <Insets left="20.0" />
                                              </padding></Label>
-                                          <DatePicker fx:id="toDatePicker" editable="false" promptText="Date to ...">
+                                          <DatePicker fx:id="toDatePicker" disable="true" editable="false" promptText="Date to ...">
                                              <HBox.margin>
                                                 <Insets left="20.0" />
                                              </HBox.margin>
@@ -186,10 +195,13 @@
                                           <Insets top="30.0" />
                                        </GridPane.margin>
                                     </HBox>
-                                    <Button fx:id="btnReport" mnemonicParsing="false" onAction="#printReport" text="Print Report" GridPane.rowIndex="1">
+                                    <Button fx:id="btnReport" mnemonicParsing="false" onAction="#printReport" style="-fx-background-color: #2b0675;" text="Print Report" textFill="#f4f0f0" GridPane.rowIndex="1">
                                        <GridPane.margin>
                                           <Insets top="30.0" />
-                                       </GridPane.margin></Button>
+                                       </GridPane.margin>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor></Button>
                                  </children>
                               </GridPane>
                            </children></AnchorPane>
@@ -217,7 +229,7 @@
                                                 <Insets top="10.0" />
                                              </VBox.margin>
                                           </Button>
-                                          <Button fx:id="btnLineChart1" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnForLineChartAverage" prefHeight="39.0" prefWidth="85.0" text="Average">
+                                          <Button fx:id="btnAverage" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnForLineChartAverage" prefHeight="39.0" prefWidth="85.0" text="Average">
                                              <VBox.margin>
                                                 <Insets top="10.0" />
                                              </VBox.margin>

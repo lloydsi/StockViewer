@@ -13,8 +13,11 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("StockViewer.fxml"));
         primaryStage.setTitle("Stock Viewer");
         primaryStage.setScene(new Scene(root, 1500, 600));
+        //root.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
         primaryStage.show();
     }
+
+
 
 
     public static void main(String[] args) {
