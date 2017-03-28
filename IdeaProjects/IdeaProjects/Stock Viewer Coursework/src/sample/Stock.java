@@ -1,6 +1,7 @@
 package sample;
 import java.io.File;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -8,7 +9,7 @@ import java.util.Date;
  */
 public class Stock extends Company {
 
-        private Date date;
+        private LocalDate date;
         private String dateStr;
         private BigDecimal open;
         private BigDecimal high;
@@ -28,7 +29,7 @@ public class Stock extends Company {
             this.volume = 00.00;
             this.adjClose = BigDecimal.valueOf(0.00);
         }
-        public Stock(Date date, String dateStr, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, Double volume, BigDecimal adjClose){
+        public Stock(LocalDate date, String dateStr, BigDecimal open, BigDecimal high, BigDecimal low, BigDecimal close, Double volume, BigDecimal adjClose){
             this.date = date;
             this.dateStr = dateStr;
             this.open = open;
@@ -38,23 +39,25 @@ public class Stock extends Company {
             this.volume = volume;
             this.adjClose = adjClose;
         }
-
-    public void setDate(Date date)
+        //--------------------------------------------------------------------------------------------------
+        public void setDate(LocalDate date)
         {
             this.date = date;
         }
-        public Date getDate()
+        public LocalDate getDate()
         {
             return this.date;
         }
-    public void setDateStr(String dateStr)
-    {
-        this.dateStr = dateStr;
-    }
-    public String getDateStr()
-    {
-        return this.dateStr;
-    }
+        //--------------------------------------------------------------------------------------------------
+        public void setDateStr(String dateStr)
+        {
+            this.dateStr = dateStr;
+        }
+        public String getDateStr()
+        {
+            return this.dateStr;
+        }
+        //--------------------------------------------------------------------------------------------------
         public void setOpen(BigDecimal open)
         {
             this.open = open;
@@ -63,6 +66,7 @@ public class Stock extends Company {
         {
             return this.open;
         }
+        //-------------------------------------------------------------------------------------------------
         public void setHigh(BigDecimal high)
         {
             this.high = high;
@@ -71,6 +75,7 @@ public class Stock extends Company {
         {
             return this.high;
         }
+        //-------------------------------------------------------------------------------------------------
         public void setLow(BigDecimal low)
         {
             this.low = low;
@@ -79,6 +84,7 @@ public class Stock extends Company {
         {
             return this.low;
         }
+        //-------------------------------------------------------------------------------------------------
         public void setClose(BigDecimal close)
         {
             this.close = close;
@@ -87,6 +93,7 @@ public class Stock extends Company {
         {
             return this.close;
         }
+        //-------------------------------------------------------------------------------------------------
         public void setVolume(Double volume)
         {
             this.volume = volume;
@@ -95,15 +102,17 @@ public class Stock extends Company {
         {
             return this.volume;
         }
+        //--------------------------------------------------------------------------------------------------
         public void setAdjClose(BigDecimal AdjClose)
         {
             this.adjClose = adjClose;
         }
-
         public BigDecimal getAdjClose()
         {
             return this.adjClose;
         }
+        //--------------------------------------------------------------------------------------------------
+
         @Override
         public String toString(){
             return (

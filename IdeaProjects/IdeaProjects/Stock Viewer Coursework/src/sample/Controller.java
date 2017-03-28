@@ -15,9 +15,16 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
-import javafx.scene.chart.LineChart;
+import javafx.scene.control.Tooltip;
+
+import javafx.util.Callback;
+import javafx.util.StringConverter;
+
+import static java.util.UUID.fromString;
 
 
 public class Controller {
@@ -78,6 +85,11 @@ public class Controller {
     private BarChart<String, BigDecimal> chartStockMonitoring;
     @FXML
     private Button btnLineChart;
+    @FXML
+    private Button btnLowest;
+    @FXML
+    private Button btnAverage;
+
 
     /* loads variables */
     private String filename;
@@ -93,16 +105,17 @@ public class Controller {
     private Stock lowestStock;
     private Stock highestStock;
     private Stock latestStock;
-    private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    private BigDecimal highest= (BigDecimal.valueOf(0.0)).setScale(2, BigDecimal.ROUND_HALF_UP);;
-    private Date highestDate;
-    private BigDecimal lowest = (BigDecimal.valueOf(1000000.0)).setScale(2, BigDecimal.ROUND_HALF_UP);;
-    private Date lowestDate;
+    private DateTimeFormatter df1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private BigDecimal highest= (BigDecimal.valueOf(0.0)).setScale(2, BigDecimal.ROUND_HALF_UP);
+    private LocalDate highestDate;
+    private BigDecimal lowest = (BigDecimal.valueOf(1000000.0)).setScale(2, BigDecimal.ROUND_HALF_UP);
+    private LocalDate lowestDate;
     private BigDecimal latestClosePrice;
-    private BigDecimal total = (BigDecimal.valueOf(0.0)).setScale(2, BigDecimal.ROUND_HALF_UP);;
+    private BigDecimal total = (BigDecimal.valueOf(0.0)).setScale(2, BigDecimal.ROUND_HALF_UP);
     private int count = 0;
     private BigDecimal average;
-    private Date latestDate;
+    private LocalDate latestDate;
+    private LocalDate earliestDate;
 
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,7 +123,7 @@ public class Controller {
     public void chooseFile(ActionEvent event) {
         /* choosing the csv file from file menu and getting path */
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Open Stock File");
+        fileChooser.setTitle("Open File");
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("CSV Files", "*.csv"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
@@ -131,32 +144,51 @@ public class Controller {
         /* Reads the csv file containing all the company details and uses the details to fill the TableView */
 
         BufferedReader br = null;
+
+        companyDetails = FXCollections.observableArrayList();
+        companyNames = FXCollections.observableArrayList();
+
         String coName;
         String coStockSymbol;
         String coFilename;
-            try {
-                br = new BufferedReader(new FileReader("CompanyDetails.csv"));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+
+        try {
+            br = new BufferedReader(new FileReader("CompanyDetails.csv"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        String line;
+
+        try {
+            while ((line = br.readLine()) != null) {
+                String[] co = line.split(",");
+
+                coStockSymbol = co[0];
+                coName = co[1];
+                coFilename = co[2];
+
+                Company company = new Company(coStockSymbol, coName, coFilename);
+                // creates arrayLists
+                companyNames.add(coName);
+                companyDetails.add(company);
             }
-            String line;
-            companyDetails = FXCollections.observableArrayList();
-            companyNames = FXCollections.observableArrayList();
-            companyTableArray = FXCollections.observableArrayList();
-            try {
-                while ((line = br.readLine()) != null) {
-                    String[] co = line.split(",");
-                    coStockSymbol = co[0];
-                    coName = co[1];
-                    coFilename = co[2];
-                    Company company = new Company(coStockSymbol, coName, coFilename);
-                    // creates arraylists
-                    companyNames.add(coName);
-                    companyDetails.add(company);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.setCompanyDetails(companyDetails);
+        this.completeTableLatestSharePrices(companyDetails);
+        this.completeCompanyNamesList(companyNames);
+        return companyDetails;
+
+    }
+
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    public ObservableList<Company> setCompanyDetails(ObservableList<Company> companyDetails){
+    /* Sets all the company variables*/
+
+        companyTableArray = FXCollections.observableArrayList();
+
         for (Company info : companyDetails) {
             filename = info.getFilename();
             collectStockDetailsData(filename);
@@ -168,31 +200,39 @@ public class Controller {
             info.setLatestClosePrice(latestClosePrice);
             info.setLatestStockDate(latestDate);
             info.setAverageStock(average);
+            info.setEarliestStockDate(earliestDate);
             companyTableArray.add(info);
             highest = BigDecimal.valueOf(0.0);
             lowest = BigDecimal.valueOf(100000.0);
             count = 0;
             total = BigDecimal.valueOf(0.0);
-
-         }
-         this.btnForLineChart();
-
-
-        // fills name and symbol columns
-        colCompanyName.setCellValueFactory(
-                new PropertyValueFactory<Company, String>("name")
-        );
-        colStockSymbol.setCellValueFactory(
-                new PropertyValueFactory<Company, String>("stockSymbol")
-        );
-        colLatestSharePrice.setCellValueFactory(
-                new PropertyValueFactory<Company, BigDecimal>("latestClosePrice")
-        );
-        tblLatestSharePrice.setItems(companyDetails);
-        listViewCompany.setItems(companyNames);
+        }
+        this.btnForLineChart();
         return companyTableArray;
     }
 
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------
+    public void completeTableLatestSharePrices(ObservableList<Company> companyDetails) {
+        // fills name and symbol columns
+        for (Company companies : companyDetails) {
+            colCompanyName.setCellValueFactory(
+                    new PropertyValueFactory<Company, String>("name")
+            );
+            colStockSymbol.setCellValueFactory(
+                    new PropertyValueFactory<Company, String>("stockSymbol")
+            );
+            colLatestSharePrice.setCellValueFactory(
+                    new PropertyValueFactory<Company, BigDecimal>("latestClosePrice")
+            );
+            tblLatestSharePrice.setItems(companyDetails);
+
+        }
+    }
+    //-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+    public void completeCompanyNamesList(ObservableList<String> companyNames){
+                  listViewCompany.setItems(companyNames);
+    }
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -204,10 +244,8 @@ public class Controller {
         Company selectedCompany = companyDetails.get(pos);
         System.out.println("Filename is " + selectedCompany.getFilename());
         String selectedCoFilename = selectedCompany.getFilename();
-
         /* Creates stock files and fills the stock table */
         this.collectStockDetailsData(selectedCoFilename);
-
         return selectedCoFileName;
     }
 
@@ -244,19 +282,12 @@ public class Controller {
                 Double volume = Double.parseDouble(sto[5]);
                 BigDecimal adjClose1 = new BigDecimal((sto[6]));
                 BigDecimal adjClose = adjClose1.setScale(2, BigDecimal.ROUND_HALF_UP);
-                Date date = null;
-                try {
-                    date = df.parse(sto[0]);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                LocalDate date = LocalDate.parse(sto[0],df1);
                 String dateStr = sto[0];
 
                 Stock stock = new Stock(date, dateStr, open, high, low, close, volume, adjClose);
+
                 createStockObject(stock);
-
-
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -266,13 +297,12 @@ public class Controller {
 
         public ObservableList<Stock> createStockObject(Stock stock){
                 /*Creates the stock object*/
-
                 stockDetails.add(stock);
-
                 this.companyStockDetails(stockDetails);
                 this.findHighest(stockDetails);
                 this.findLowest(stockDetails);
                 this.findLatest(stockDetails);
+                this.findEarliest(stockDetails,latestDate);
                 total = total.add(stock.getClose());
                 count = count + 1;
                 this.getAverage(stockDetails);
@@ -290,8 +320,9 @@ public class Controller {
                     highest = stockLine.getHigh();
                     highestDate = highestStock.getDate();
                     String lblText;
-                    lblText = highest.toString() + " on " + df.format(highestDate);
+                    lblText = highest.toString() + " on " + df1.format(highestDate);
                     lblHighest.setText(lblText);
+
                 }
 
             }
@@ -309,7 +340,7 @@ public class Controller {
                     lowest = stockLine.getLow();
                     lowestDate = lowestStock.getDate();
                     String lblTextLow;
-                    lblTextLow = lowest.toString() + " on " + df.format(lowestDate);
+                    lblTextLow = lowest.toString() + " on " + df1.format(lowestDate);
                     lblLowest.setText(lblTextLow);
                 }
             }
@@ -321,22 +352,37 @@ public class Controller {
 
         public Stock findLatest(ObservableList<Stock>StockDetails) {
         /*finds the latest date from the stock items*/
-            try {
-                latestDate=df.parse("1900-01-01");
-            }catch (ParseException e) {
-               e.printStackTrace();
-            }
+            latestDate=LocalDate.parse("1900-01-01",df1);
+
             for (Stock stockLine : stockDetails) {
-                if (stockLine.getDate().after(latestDate)) {
+                if (stockLine.getDate().isAfter(latestDate)) {
                     latestDate = stockLine.getDate();
                     Stock latestStock = stockLine;
                     latestClosePrice = latestStock.getClose();
-                    String latestDay = df.format(latestDate);
-                    lblLatestSharePrice.setText(latestClosePrice + " on " + latestDay);
+                   String latestDay = df1.format(latestDate);
+                   lblLatestSharePrice.setText(latestClosePrice + " on " + latestDay);
                 }
             }
+            toDatePicker.setValue(latestDate);
             return latestStock;
             }
+
+    //----------------------------------------------------------------------------------------------------------------------------------------------------
+
+        public LocalDate findEarliest(ObservableList<Stock>stockDetails, LocalDate latestDate){
+
+            for(Stock stockLine : stockDetails){
+                if (stockLine.getDate().isBefore(latestDate)) {
+                    earliestDate = stockLine.getDate();}
+                }
+            fromDatePicker.setValue(earliestDate);
+            return earliestDate;
+        }
+
+    //---------------------------------------------------------------------------------------------------------------------------------------------------
+        public void searchEarliestUserDate(ActionEvent selectFromDate){
+
+        }
 
     //---------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -359,8 +405,9 @@ public class Controller {
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
     public void printReport(ActionEvent event){
-           Report outReport = new Report(companyTableArray);
-    }
+            Report outReport = new Report(companyTableArray);
+     }
+
 
     //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -400,6 +447,7 @@ public class Controller {
 
             }
 
+
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
         public void btnForLineChart(){
@@ -413,7 +461,8 @@ public class Controller {
             series.setName("Company Average Stock ");
 
         }}
-//----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+  //----------------------------------------------------------------------------------------------------------------------------------------------------------
 
     public void btnForLineChartHighest(ActionEvent event){
         XYChart.Series<String,BigDecimal> series1 = new XYChart.Series<String,BigDecimal>();
@@ -437,7 +486,13 @@ public class Controller {
         chartStockMonitoring.getData().add(series2);
         series2.setName("Company Lowest Stock ");
 
-    }}}
+    }}
+//----------------------------------------------------------------------------------------------------------------------------------------------------------
+    public void btnForLineChartAverage(ActionEvent event){
+        XYChart.Series<String,BigDecimal> series2 = new XYChart.Series<String,BigDecimal>();
+        btnForLineChart();
+
+        }}
 
 
 

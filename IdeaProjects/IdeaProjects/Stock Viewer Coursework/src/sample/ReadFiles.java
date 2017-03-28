@@ -1,53 +1,47 @@
 package sample;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.TableView;
+import javafx.application.Application;
+import javafx.stage.FileChooser;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.math.BigDecimal;
+import java.io.*;
+import java.util.List;
+
+import static org.apache.tools.ant.types.resources.MultiRootFileSet.SetType.file;
+
 /**
  * Created by sian- on 16/03/2017.
  */
-public class ReadFiles {
+public  class ReadFiles  {
 
-    private ArrayList<Stock> stockList;
-    private File selectedFilename;
+    private String filename;
+    private FileWriter fileW;
+    private BufferedReader input;
+    private File txtFile;
+    private String txtFilename;
 
-    public void readFile(File selectedFilename) {
-        // using the selectedFile and reading line by line assigning variables linked to stock
-        try {
-            Scanner readIn = new Scanner(new BufferedReader(new FileReader(selectedFilename)));
-            while (readIn.hasNextLine()) {
-                String line = readIn.nextLine();
-                String[] sto = line.split(",");
-                Date date = StringToDate.changeStringToDate(sto[0]);
-                String dateStr = sto[0];
-                BigDecimal open = new BigDecimal((sto[1]));
-                BigDecimal open2 = open.setScale(2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal high = new BigDecimal((sto[2]));
-                BigDecimal high2 = high.setScale(2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal low = new BigDecimal((sto[3]));
-                BigDecimal low2 = low.setScale(2, BigDecimal.ROUND_HALF_UP);
-                BigDecimal close = new BigDecimal((sto[4]));
-                BigDecimal close2 = high.setScale(2, BigDecimal.ROUND_HALF_UP);
-                Double volume = Double.parseDouble(sto[5]);
-                BigDecimal adjClose = new BigDecimal((sto[6]));
-                BigDecimal adjClose2 = high.setScale(2, BigDecimal.ROUND_HALF_UP);
-                Stock stockRecord = new Stock(date, dateStr, open, high, low, close, volume, adjClose);
-                stockList.add(stockRecord);
-                System.out.println(stockList);
+    public void read(String txtFilename)  {
+        ;
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("View Reports");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("TXT Files", "*.txt"),
+                new FileChooser.ExtensionFilter("All Files", "*.*"));
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+
+            try {
+                input = new BufferedReader(new FileReader(selectedFile));
+                String line;
+                while ((line = input.readLine()) != null) {
+                    System.out.println(line);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
-        catch(FileNotFoundException filename){
-            System.out.println("Error in reading file");
-
         }
     }
 }
+
+
+
+

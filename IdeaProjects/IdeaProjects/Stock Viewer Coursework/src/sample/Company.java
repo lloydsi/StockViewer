@@ -7,6 +7,8 @@ import javafx.collections.ObservableList;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.io.FileReader;
 import java.io.BufferedReader;
@@ -17,19 +19,20 @@ import java.util.Date;
  * Created by sian- on 11/03/2017.
  */
 public class Company {
-        private DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         private int coNumber;
         private int counter=0;
         private String name;
         private String stockSymbol;
         private String filename;
         private BigDecimal latestClosePrice;
-        private Date latestStockDate;
-        private Date highestStockDate;
-        private Date lowestStockDate;
+        private LocalDate latestStockDate;
+        private LocalDate highestStockDate;
+        private LocalDate lowestStockDate;
+        private LocalDate earliestStockDate;
         private BigDecimal AverageStock;
         private BigDecimal lowestStockValue;
         private BigDecimal highestStockValue;
+    private DateTimeFormatter df1 = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
         public Company()
         {   this.coNumber = counter;
@@ -64,99 +67,98 @@ public class Company {
 
 
         /*Getters and Setters*/
-        public int getCoNumber(){ return coNumber;}
+
         public void setLatestClosePrice(BigDecimal latestClosePrice){
             this.latestClosePrice = latestClosePrice;
         }
-
         public BigDecimal getLatestClosePrice(){
             return latestClosePrice;
         }
-
-        public void setHighestStockDate (Date highestStockDate){
+        //---------------------------------------------------------------------------------------------------------------------
+        public void setHighestStockDate (LocalDate highestStockDate){
             this.highestStockDate = highestStockDate;
         }
-
-        public Date getHighestStockDate(){
+        public LocalDate getHighestStockDate(){
             return highestStockDate;
         }
-
-        public Date getLowestStockDate(){
+        // ---------------------------------------------------------------------------------------------------------------------
+        public LocalDate getLowestStockDate(){
             return lowestStockDate;
         }
-
-        public void setLowestStockDate (Date lowestStockDate){
+        public void setLowestStockDate (LocalDate lowestStockDate){
             this.lowestStockDate = lowestStockDate;
         }
+        //-----------------------------------------------------------------------------------------------------------------------
         public void setLowestStockValue(BigDecimal lowestStockValue){
             this.lowestStockValue = lowestStockValue;
         }
         public BigDecimal getLowestStockValue(){
             return lowestStockValue;
         }
+        //-----------------------------------------------------------------------------------------------------------------------
         public void setHighestStockValue(BigDecimal highestStockValue){
             this.highestStockValue = highestStockValue;
         }
         public BigDecimal getHighestStockValue(){
             return highestStockValue;
         }
+        //------------------------------------------------------------------------------------------------------------------------
         public void  setLatestSharePrice(BigDecimal latestSharePrice){
             this.latestClosePrice = latestSharePrice;
         }
         public BigDecimal getLatestSharePrice(){
             return latestClosePrice;
         }
-        public void setLatestStockDate(Date latestStockDate){
+        //-------------------------------------------------------------------------------------------------------------------------
+        public void setLatestStockDate(LocalDate latestStockDate){
             this.latestStockDate = latestStockDate;
         }
-        public Date getLatestStockDate(){
+        public LocalDate getLatestStockDate(){
             return latestStockDate;
         }
-
+        //--------------------------------------------------------------------------------------------------------------------------
         public void setAverageStock(BigDecimal AverageStock){
             this.AverageStock = AverageStock;
         }
         public BigDecimal getAverageStock(){
             return AverageStock;
         }
-
-
-
+        //--------------------------------------------------------------------------------------------------------------------------
         public void setFilename(String filename) {
             this.filename = filename;
         }
-
         public String getFilename(){
                 return this.filename;
         }
-
+        //--------------------------------------------------------------------------------------------------------------------------
         public void setName(String name)
         {
             this.name = name;
         }
-
         public String getName()
         {
             return this.name;
         }
-
+        //--------------------------------------------------------------------------------------------------------------------------
         public void setStockSymbol(String stockSymbol)
         {
             this.stockSymbol = stockSymbol;
         }
-
         public String getStockSymbol()
         {
             return this.stockSymbol;
         }
-
+        //--------------------------------------------------------------------------------------------------------------------------
+        public void setEarliestStockDate(LocalDate earliestStockDate){this.earliestStockDate = earliestStockDate;}
+        public LocalDate getEarliestStockDate(){return this.earliestStockDate;}
+        //--------------------------------------------------------------------------------------------------------------------------
         public void getFilenameFromStockSymbol(String stockSymbol){
             int symbolLength = stockSymbol.length();
             String strippedSymbol = stockSymbol.substring(0,symbolLength-2);
             String filename = strippedSymbol + ".csv";
             this.setFilename(filename);
         }
-
+        //--------------------------------------------------------------------------------------------------------------------------
         public  void getStockSymbolFromFilename(String filename){
             int filenameLength = filename.length();
             String strippedFilename = filename.substring(0,filenameLength-4);
@@ -164,17 +166,15 @@ public class Company {
             this.setStockSymbol(stockSymbol);
         }
 
-
-
-
+        //---------------------------------------------------------------------------------------------------------------------------
 
         @Override
         public String toString()
         {
-            return "\n\nCompany Number:  " + coNumber +"\nCompany Name: " + this.name + "\nStock Symbol: "+ this.stockSymbol +
-                    "\nHighest:  " + this.highestStockValue + "\nDate of Highest:  " + df.format(this.highestStockDate) +
-                "\nLowest:  " + this.lowestStockValue + "\nDate of Lowest:  " + df.format(this.lowestStockDate) + "\nAverage Close:  " + this.AverageStock +"" +
-                "\nClose:  " + this.latestClosePrice +".";
+            return "\r\nCompany Name: " + this.name + "\r\nStock Symbol: "+ this.stockSymbol +
+                    "\r\nHighest:  " + this.highestStockValue + "\r\nDate of Highest:  " + df1.format(this.highestStockDate) +
+                "\r\nLowest:  " + this.lowestStockValue + "\r\nDate of Lowest:  " + df1.format(this.lowestStockDate) + "\r\nAverage Close:  " + this.AverageStock +"" +
+                "\r\nClose:  " + this.latestClosePrice +".";
         }
     }
 

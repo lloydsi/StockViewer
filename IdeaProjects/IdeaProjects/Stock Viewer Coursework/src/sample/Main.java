@@ -12,7 +12,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("StockViewer.fxml"));
         primaryStage.setTitle("Stock Viewer");
-       primaryStage.setFullScreen(true);
         primaryStage.setScene(new Scene(root, 1500, 600));
         primaryStage.show();
     }
